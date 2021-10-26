@@ -8,7 +8,7 @@ import re
 import pandas as pd
 import os 
 from tqdm import tqdm
-
+import time
 
 def url_crawler(company_name, company_code, maxpage):
     link_result =[]
@@ -77,6 +77,61 @@ def article_crawler(company_name):
     news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
     news_df.to_csv('./data/news/'+company_name+'_news_article.csv', index = False, encoding ="utf-8")
 
+#-------------------------주식 데이터 다운로드--------------------------------------------------------
+def download_stock_data(stock_code, date1, date2, dir_path):
+    chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
+
+    #-- 'USB : 시스템에 부착된 장치가 작동하지 않습니다' 오류 회피 ----------------- 
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    #----------------------------------------------------------------------------
+
+    #---------다운로드 경로 설정 -------------------------
+    options.add_experimental_option("prefs", {
+      "download.default_directory": dir_path,
+      "download.prompt_for_download": False,
+      "download.directory_upgrade": True,
+      "safebrowsing.enabled": True
+    })
+    #----------------------------------------------------
+
+    try:
+        driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
+    except:
+        chromedriver_autoinstaller.install(True) # 크롬 드라이버 자동 설치
+        driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
+
+    driver.implicitly_wait(5) # 5초대기
+
+    driver.get('http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020103')
+    driver.implicitly_wait(5)
+
+    input_code = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[1]/td/div/div/p/input')
+    input_code.clear()
+    input_code.send_keys(stock_code)
+
+    find_code = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[1]/td/div/div/p/img')
+    find_code.click()
+    driver.implicitly_wait(5)
+
+    date_1 = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[2]/td/div/div/input[1]')
+    date_1.clear()
+    date_1.send_keys(date1)
+    time.sleep(1)
+
+    date_2 = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[2]/td/div/div/input[2]')
+    date_2.clear()
+    date_2.send_keys(date2)
+    time.sleep(1)
+
+    driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[2]/td/a').click()
+    time.sleep(2)
+
+    driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[2]/div/p[2]/button[2]/img').click()
+    driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[2]/div[2]/div[2]/div/div[2]').click()
+    time.sleep(2)
+
+    driver.close()
 
 '''
 def stock_holiday_krx(year1, year2): # krx에서 휴장일 크롤링

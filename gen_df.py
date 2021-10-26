@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import re
+from datetime import datetime, timedelta
 
 #---------custom modules---------------
 import cust_dates
@@ -65,10 +66,12 @@ def gen_total_df(stock_data, dates, prob):
       date_stock.append(company_datetime)
       updown_stock.append(stock_data.iloc[i]["등락률"])
 
+    '''
     for i in range(len(dates)): # 일정 기간 내 모든 주식 데이터의 날짜와 비교하여 없으면 해당 '날짜'와 '등락률 = 0' 삽입
       if dates[i] not in date_stock:
         date_stock.insert(i, dates[i])
         updown_stock.insert(i, 0)
+    '''
 
     data_total_df = pd.DataFrame({"dates": date_stock, "등락률":updown_stock}) #data_total_df DataFrame 생성
 
@@ -85,6 +88,21 @@ def gen_total_df(stock_data, dates, prob):
 
     return data_total_df
 #------------------------------------------------------------------------------------------------------------------------------
+
+def get_stock_price(stock_list, p, date):
+   while(True):
+
+      stock_date = datetime.strptime(stock_list[p]['date'], format_t)
+      new_date = datetime.strptime(date, format) + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
+      
+      diff = stock_date.date()- new_date.date()
+
+      if  diff.days>=0:
+         return stock_list[p], p
+      else:
+         p = p+1
+
+
 
 #-------------------------------뉴스 날짜에 따른 result값------------------------------------------------------------------
 def gen_news_updown(company_news_data_sorted, data_total_df):
