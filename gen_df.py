@@ -89,20 +89,53 @@ def gen_total_df(stock_data, dates, prob):
     return data_total_df
 #------------------------------------------------------------------------------------------------------------------------------
 
-def get_stock_price(stock_list, p, date):
-   while(True):
+def gen_senti(company_name, data_df_sorted, data_total_df):
+    def get_stock_price(stock_list, p, date):
+        while(True):
+           # print(stock_list[p]['date'], date)
+           stock_date = datetime.strptime(stock_list[p][0], '%Y-%m-%d')
+           new_date = datetime.strptime(date, ' %Y.%m.%d %H:%M') + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
+           
+           diff = stock_date.date()- new_date.date()
+           # print(stock_date, new_date, diff.days)
+           if  diff.days>=0:
+              return stock_list[p], p
+           else:
+              p = p+1
 
-      stock_date = datetime.strptime(stock_list[p]['date'], format_t)
-      new_date = datetime.strptime(date, format) + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
-      
-      diff = stock_date.date()- new_date.date()
+    news_list = data_df_sorted.values.tolist()
+    stock_list = data_total_df.values.tolist()
 
-      if  diff.days>=0:
-         return stock_list[p], p
-      else:
-         p = p+1
+    temp_list_1 = []
+    temp_list_2 = []
 
+    p = 0
 
+    for item in news_list: 
+      ratio, p = get_stock_price(stock_list, p, item[1]) 
+      temp_list_1.append(item)
+      temp_list_2.append(ratio)
+
+    total_list = list(map(list.__add__, temp_list_1, temp_list_2))
+
+    col_name = ['title', 'dates', 'article', 'apply_date', 'ratio' ,'up/down']
+
+    senti_df = pd.DataFrame(total_list,  columns=col_name)
+
+    index = []
+
+    for i in range(len(senti_df)):
+      index.append(i)
+
+    senti_df['index'] = index
+    senti_df = senti_df[['index', 'title', 'dates', 'article', 'apply_date', 'ratio' ,'up/down']]
+
+    # csv파일로 저장
+    senti_df.to_csv('./data/dict/'+company_name+'_senti.csv', index=True, encoding= 'cp949')
+
+    return senti_df
+
+'''
 
 #-------------------------------뉴스 날짜에 따른 result값------------------------------------------------------------------
 def gen_news_updown(company_news_data_sorted, data_total_df):
@@ -190,3 +223,5 @@ def gen_sentiDic(company_name, company_news, updown, total_df, start_year, end_y
 
     return sentiDic
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'''
