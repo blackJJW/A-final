@@ -1,47 +1,38 @@
 #---------custom modules---------------
-import cust_dates
 import gen_df
 import crawling
+import cust_noun
 #--------------------------------------
-
+import pathlib
 import os, glob
 import os.path
 
 #------------- 주식데이터 다운로드 path------------------------------------
-download_path = './data/stock'
+current_path = str(pathlib.Path(__file__).parent.absolute())
+download_path = current_path+'\data\stock'
 #-------------------------------------------------------------------------
-
-# --------- 날짜, 시간 데이터 format -----------------
-format = ' %Y.%m.%d %H:%M' # ex) ' 2021.10.20 17:20'
-format_s = '%Y/%m/%d'      # ex) '2021/10/20'
-format_t = '%Y-%m-%d'      # ex) '2021-10-20'
-time_format ='%H:%M:%S'    # ex) '17:20:00'
-# ----------------------------------------------------
-
-#------------회사명 변수--------------
-company_name = "GS건설"
-#------------------------------------
-
-#-----------기간 내 날짜수, 주말 리스트 생성 변수-----
-start_date = "2020-10-14"
-end_date = "2021-10-14"
-#----------------------------------------------------
 
 #-----------정규분포 확률 변수----------
 prob = 0.75
 #--------------------------------------
 
-#-----------krx 휴장일 출력 기준 년도 변수-----------------
-start_year = 2020
-end_year = 2021
-#--------------------------------------------------------
+def display_dir_path(dir_name): # dir 내 파일 목록 출력
+    file_dir = "./data/"+dir_name 
+    list_files = os.listdir(file_dir)
+
+    print('\n')
+    print('*'*10+'데이터 파일 목록'+'*'*10)
+
+    for i in list_files :
+        print(i)
+    print('*'*35)
 
 
 def main_menu():
     print("1. 뉴스 크롤링")
     print("2. 주식 크롤링")
     print("3. 데이터 프레임 생성")
-    print("4. 모델 학습")
+    print("4. 명사 추출")
     print("5. TEST")
     print("6. 성능비교")
     print("7. 종료")
@@ -75,6 +66,15 @@ def menu_3():
 
     return int(menu_3)
 
+def menu_4():
+    print("1. 명사 추출")
+    print("2. 긍부정 지수 계산")
+    print("3. 메인메뉴")
+
+    menu_4 = input("메뉴 선택 : ")
+
+    return int(menu_4)
+
 
 def run():
     while 1: # 메인메뉴 while
@@ -99,7 +99,7 @@ def run():
                 elif menu_a == 3:
                     break
                 
-        elif menu == 2:
+        elif menu == 2: # 주식 데이터 다운로드
             while 1:
                 menu_b = menu_2()
 
@@ -116,35 +116,54 @@ def run():
                 elif menu_b == 2:
                     break
 
-        elif menu == 3:
+        elif menu == 3: # 데이터 프레임 생성
             while 1:
                 menu_c = menu_3()
                 if menu_c == 1:
-                    stock_dir = "./data/stock"
-                    files = os.listdir(stock_dir)
+
+                    display_dir_path("stock")
+
+                    stock_file_name = input("주식데이터 파일명을 입력하시오.(확장자 명 포함 필수) : ")
+                    company_data_df_sorted = gen_df.gen_stock_data_df(stock_file_name)
+                    total_df = gen_df.gen_total_df(company_data_df_sorted, prob)
+
+                    display_dir_path("news")
                     
-                    for i in files :
-                        print(i)
-
+                    news_file_name = input("뉴스데이터 파일명을 입력하시오.(확장자 명 포함 필수): ")
+                    news_data_df = gen_df.gen_news_data_df(news_file_name)
                     
-                    '''
-                    company_stock_data_sorted = gen_df.gen_stock_data_df(company_name)
-                    company_news_data_sorted = gen_df.gen_news_data_df(company_name)
+                    senti_name = input("완성된 데이터 프레임의 이름을 입력하시오. (확장자 명 미 포함) : ")
 
-                    dates = cust_dates.date_range(start_date, end_date)
-
-                    data_total_df = gen_df.gen_total_df(company_stock_data_sorted, dates, prob)
-
-                    news_updown = gen_df.gen_news_updown(company_news_data_sorted, data_total_df)
-
-                    sentiDic = gen_df.gen_sentiDic(company_name, company_news_data_sorted, news_updown, data_total_df, start_year, end_year, start_date, end_date)
-                    '''
+                    gen_df.gen_senti(senti_name, news_data_df, total_df)
 
                 elif menu_c == 2:
                     break
 
         elif menu == 4:
-            pass
+            while 1:
+                menu_d = menu_4()
+                if menu_d == 1:
+
+                    display_dir_path("dict")
+
+                    senti_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+                    cust_noun.gen_noun_df(senti_name)
+                
+                elif menu_d == 2:
+
+                    display_dir_path("dict")
+                    
+                    senti_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+
+                    display_dir_path("nouns")
+                    
+                    noun_df_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+
+                    cust_noun.gen_nouns_freq(senti_name, noun_df_name)
+
+                elif menu_d == 3:
+                    break
+
         elif menu == 5:
             pass
         elif menu == 6:

@@ -1,12 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import chromedriver_autoinstaller
-import csv
 from bs4 import BeautifulSoup
 import requests
-import re
 import pandas as pd
-import os 
 from tqdm import tqdm
 import time
 
@@ -77,6 +74,8 @@ def article_crawler(company_name):
     news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
     news_df.to_csv('./data/news/'+company_name+'_news_article.csv', index = False, encoding ="utf-8")
 
+    driver.close()
+
 #-------------------------주식 데이터 다운로드--------------------------------------------------------
 def download_stock_data(stock_code, date1, date2, dir_path):
     chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
@@ -133,52 +132,3 @@ def download_stock_data(stock_code, date1, date2, dir_path):
 
     driver.close()
 
-'''
-def stock_holiday_krx(year1, year2): # krx에서 휴장일 크롤링
-    
-    driver.get('https://open.krx.co.kr/contents/MKD/01/0110/01100305/MKD01100305.jsp')
-    driver.implicitly_wait(3)
-
-    years = []
-    for i in range(year2 - year1 +1):
-        years.append(year1 + i)
-
-    date_list = []
-
-    for k in range(len(years)):
-        select = Select(driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/article/div/fieldset/form/dl/dd/select'))    
-        select.select_by_value(str(years[k]))
-
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(1)
-        driver.find_element_by_id('btnidc4ca4238a0b923820dcc509a6f75849b').click()
-        driver.implicitly_wait(300000)
-
-        length = len(driver.find_elements_by_xpath('/html/body/div/div[2]/div/div[2]/article/div/div[1]/div[1]/div[1]/div[2]/div/div/table/tbody/tr'))
-
-        for i in range(length):
-            url_data = '/html/body/div/div[2]/div/div[2]/article/div/div[1]/div[1]/div[1]/div[2]/div/div/table/tbody/tr['+ str(i+1) +']/td[1]'
-            date_list.append(driver.find_element_by_xpath(url_data).text)
-        
-    with open('./data/dates/stock_holiday_krx.csv', 'w') as file:
-        write = csv.writer(file)
-        write.writerow(date_list)
-
-    return date_list
-'''    

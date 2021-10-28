@@ -1,0 +1,89 @@
+'''
+#-------------------------------뉴스 날짜에 따른 result값-------------------------------------------------------------------------------------------------------------
+def gen_news_updown(company_news_data_sorted, data_total_df):
+    news_updown = []
+
+    a = dict(zip(data_total_df["dates"], data_total_df["result"]))
+
+    for i in range(len(company_news_data_sorted)):
+      news_datetime = cust_dates.type_date_transform(company_news_data_sorted.iloc[i]["date"], format)
+      news_updown.append(a[news_datetime])
+
+    return news_updown
+#----------------------------------------------------------------------------------------------------
+
+# -------------------------------감성 사전 구축--------------------------------------------------------------------------------------------
+def gen_sentiDic(company_name, company_news, updown, total_df, start_year, end_year, start_date, end_date):
+    sentiDic = pd.DataFrame({"dates" : company_news["date"], 
+                         "title" : company_news["title"], 
+                         "article" : company_news["article"],
+                         "up/down": updown})
+
+    sentiDic["dates"] = pd.to_datetime(sentiDic["dates"])
+    sentiDic["date"] = sentiDic["dates"].dt.date
+    sentiDic["time"] = sentiDic["dates"].dt.time
+
+    apply_date = [] #등락률이 적용될 날짜 빈 리스트 선언
+
+    for i in range(len(sentiDic)):
+      if cust_dates.type_time_transform(str(sentiDic.iloc[i]["time"])) >= cust_dates.type_time_transform("00:00:00") and cust_dates.type_time_transform(str(sentiDic.iloc[i]["time"]))<= cust_dates.type_time_transform("15:30:00"):
+        apply_date.append(sentiDic.iloc[i]["date"])
+      else:
+        apply_date.append(cust_dates.date_plus(sentiDic.iloc[i]["date"], 1))
+
+    sentiDic["apply_date"] = apply_date
+    #-------------------날짜 데이터 처리 --------------------------------------------------------------------------------------
+    stock_holiday = crawling.stock_holiday_krx(start_year, end_year) # krx에서 해당 년도 휴장일 크롤링
+
+    weekend_days = cust_dates.weekend(start_date, end_date) # 주말 날짜 리스트 
+
+    total_stock_holiday = weekend_days.copy()
+
+    for i in range(len(stock_holiday)): # 휴장일 리스트 중 주말 날짜 데이터 이전의 날짜는 제외
+        if stock_holiday[i] > weekend_days[0]: 
+            total_stock_holiday.append(stock_holiday[i])
+        else:
+            pass
+
+    for i in  range(len(stock_holiday)): # 종합 휴장일 리스트 중 지정 날짜 이후의 날짜는 제외
+        if stock_holiday[-1 - i] > end_date:
+            total_stock_holiday.remove(stock_holiday[-1 - i])
+        else:
+            pass
+
+    total_stock_holiday = list(set(total_stock_holiday)) #중복 제거 및 정렬
+    total_stock_holiday.sort()
+    #-----------------------------------------------------------------------------------------------------------------------
+    for i in range(len(sentiDic)-1, -1, -1):    # 공휴일, 임시공휴일 -> 평일 
+      for holi in range(5):                     # 토요일 -> 월요일             
+                                                # 일요일 -> 월요일
+        day_temp = sentiDic["apply_date"][i]
+        if str(day_temp) in total_stock_holiday:
+
+          day_temp = cust_dates.date_plus(day_temp, 1) 
+          sentiDic["apply_date"][i]=day_temp
+
+        else:
+          break
+
+    sentiDic.drop('up/down', axis=1, inplace=True) # 적용 날짜 리스트 적용 전 'up/down' 열 삭제
+
+    upzerodown = []
+    for i in range(len(sentiDic)):      # 적용 날짜에 따른 등락률 적용
+      days_temp = cust_dates.type_date_transform(str(sentiDic.iloc[i]["apply_date"]), format_t) 
+      for j in range(len(total_df)):
+        if days_temp == total_df["dates"][j]:
+            upzerodown.append(total_df["result"][j])
+
+        else:
+          pass
+
+    sentiDic["up/down"] = upzerodown
+
+    # csv파일로 저장
+    sentiDic.to_csv('./data/dict/'+company_name+'_sentiDic.csv', index=True, encoding= 'cp949')
+
+    return sentiDic
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'''
