@@ -169,7 +169,7 @@ def run():
                     
                     senti_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
 
-                    display_dir_path("nouns")
+                    display_dir_path("nouns/noun_df")
                     
                     noun_df_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
 

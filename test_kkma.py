@@ -9,17 +9,31 @@ with open('./data/nouns/GS건설20201026_senti.csv_nouns_freq.json', 'r') as f:
   data = json.load(f)
   
 nouns_freq = pd.DataFrame.from_dict(data, orient='columns')
-print(f"columns: {nouns_freq.columns}")
 
 nouns_dic = nouns_freq.transpose()
-nouns_dic.index.name= "단어"
+nouns_dic.index.name= "noun"
 
-nouns_dic = nouns_dic[nouns_dic.freq > 1]
-print(nouns_dic)
+nouns_dic = nouns_dic[nouns_dic.freq != 1]
 
 nouns_dic_del_0 = nouns_dic[(nouns_dic['posRatio'] <= 0.05) & (nouns_dic['negRatio'] <= 0.05)].index
 nouns_dic_del = nouns_dic.drop(nouns_dic_del_0)
-print(nouns_dic_del)
+
+c=[]
+
+for i in range(len(nouns_dic_del)):
+  if len(nouns_dic_del.index[i]) < 2:
+    c.append(i)
+    #freq	up	down	same	posRatio	negRatio
+    nouns_dic_del.at[nouns_dic_del.index[i],"freq"] = None
+    nouns_dic_del.at[nouns_dic_del.index[i],"up"] = None
+    nouns_dic_del.at[nouns_dic_del.index[i],"down"] = None
+    nouns_dic_del.at[nouns_dic_del.index[i],"same"] = None
+    nouns_dic_del.at[nouns_dic_del.index[i],"posRatio"] = None
+    nouns_dic_del.at[nouns_dic_del.index[i],"negRatio"] = None
+
+nouns_dic_del = nouns_dic_del.dropna(axis=0)
+
+nouns_dic_del.to_json('./data/nouns/Sk_train_noun_result.json', orient= 'index')
 
 '''
 kkma = Kkma()

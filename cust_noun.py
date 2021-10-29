@@ -20,12 +20,12 @@ def gen_noun_df(file_name):
         data_insert = {"index":company_senti["index"][y], "nouns": n}
         noun_df = noun_df.append(data_insert, ignore_index=True)
 
-    noun_df.to_csv('./data/nouns/'+file_name+'_noun_df.csv', encoding="cp949")
+    noun_df.to_csv('./data/nouns/noun_df/'+file_name+'_noun_df.csv', encoding="cp949")
 
 def gen_nouns_freq(senti_file_name, noun_df_file_name):
 
     company_senti = pd.read_csv('./data/dict/'+senti_file_name, encoding="cp949")
-    noun_df = pd.read_csv('./data/nouns/'+noun_df_file_name, encoding="cp949")
+    noun_df = pd.read_csv('./data/nouns/noun_df/'+noun_df_file_name, encoding="cp949")
 
     updown_dict = dict(zip(company_senti["index"], company_senti["up/down"]))
 
@@ -48,14 +48,38 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
        nouns_freq[k]['posRatio'] = nouns_freq[k]['up'] / nouns_freq[k]['freq']
        nouns_freq[k]['negRatio'] = nouns_freq[k]['down'] / nouns_freq[k]['freq']
 
-    with open('./data/nouns/'+senti_file_name+'_nouns_freq.json', 'w') as json_file:
-        json.dump(nouns_freq, json_file)
-     
+    nouns_freq = pd.DataFrame.from_dict(nouns_freq, orient='columns')
 
-def pos_neg_points(article, nouns_freq):
+    nouns_dic = nouns_freq.transpose()
+    nouns_dic.index.name= "noun"
+
+    nouns_dic = nouns_dic[nouns_dic.freq != 1]
+
+    nouns_dic_del_0 = nouns_dic[(nouns_dic['posRatio'] <= 0.05) & (nouns_dic['negRatio'] <= 0.05)].index
+    nouns_dic_del = nouns_dic.drop(nouns_dic_del_0)
+
+    c=[]
+
+    for i in range(len(nouns_dic_del)):
+      if len(nouns_dic_del.index[i]) < 2:
+        c.append(i)
+        #freq	up	down	same	posRatio	negRatio
+        nouns_dic_del.at[nouns_dic_del.index[i],"freq"] = None
+        nouns_dic_del.at[nouns_dic_del.index[i],"up"] = None
+        nouns_dic_del.at[nouns_dic_del.index[i],"down"] = None
+        nouns_dic_del.at[nouns_dic_del.index[i],"same"] = None
+        nouns_dic_del.at[nouns_dic_del.index[i],"posRatio"] = None
+        nouns_dic_del.at[nouns_dic_del.index[i],"negRatio"] = None
+
+    nouns_dic_del = nouns_dic_del.dropna(axis=0)
+
+    nouns_dic_del.to_json('./data/nouns/nouns_freq/'+senti_file_name+'_nouns_freq.json', orient= 'index')
+
+     
+def pos_neg_points(file_name, article, nouns_freq):
     a_article = pd.read_csv("./data/news/sorted_article/"+article, encoding="utf8")
 
-    with open("./data/nouns/"+nouns_freq, 'r') as f:
+    with open("./data/nouns/nouns_freq/"+nouns_freq, 'r') as f:
         nouns_freq = json.load(f)
 
     p_list = []
@@ -76,14 +100,5 @@ def pos_neg_points(article, nouns_freq):
 
     a_article["sumPos"] = p_list
     a_article["sumNeg"] = n_list
-    
-    
-    a_article.to_csv('./data/result/a_article_result.csv', index=True, encoding= 'cp949')
-
-
-
-
-
-
-
-
+        
+    a_article.to_csv('./data/result/'+file_name+'_result.csv', index=True, encoding= 'cp949')
