@@ -26,7 +26,7 @@ def gen_stock_data_df(name):
 #-----------회사 뉴스 데이터----------------------------------------------------------------------------------------------------------
 def gen_news_data_df(name):
     # ---news csv파일 open --------------------------------------------
-    data_df = pd.read_csv('./data/news/'+name, encoding="utf8")
+    data_df = pd.read_csv('./data/news/cr_article/'+name, encoding="utf8")
     # ------------------------------------------------------------------
 
     # ----------------정규식을 이용하여 기사 내용 중 불 필요한 부분 제거-----------------------------------------------------
@@ -36,11 +36,13 @@ def gen_news_data_df(name):
     # ---------------------------------------------------------------------------------------------------------------------
     data_df_sorted = data_df.sort_values(by='date', axis = 0) # 'date'를 기준으로 오름차순 정렬하여 data_df_sorted로 저장
 
+    data_df_sorted.to_csv('./data/news/sorted_article/'+name+'_data_df_sorted.csv', index = False, encoding ="utf-8")
+    
     return data_df_sorted
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------날짜별 등락률 데이터 프레임------------------------------------------------------------------
-def gen_total_df(stock_data, prob):
+def gen_total_df(stock_data, prob, name):
     date_stock = [] # 주식데이터의 날짜 빈 리스트 선언
     updown_stock = [] # 주식데이터의 등락률 빈 리스트 선언
 
@@ -62,6 +64,8 @@ def gen_total_df(stock_data, prob):
     data_total_df.loc[data_total_df['등락률'] <= smaller_norm, 'result'] = -1 # 정규분포 25% 이하의 경우 -1
     #---------------------------------------------------------------------------------------------------------------------------------------------
 
+    data_total_df.to_csv('./data/stock/total_df/'+name+'_data_total_df.csv', index = False, encoding ="utf-8")
+    
     return data_total_df
 #------------------------------------------------------------------------------------------------------------------------------
 
@@ -79,6 +83,9 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
               return stock_list[p], p
            else:
               p = p+1
+              
+    data_df_sorted = pd.read_csv('./data/news/sorted_article/'+data_df_sorted, encoding='utf8')
+    data_total_df = pd.read_csv('./data/stock/total_df/'+data_total_df, encoding='utf8')
 
     news_list = data_df_sorted.values.tolist()
     stock_list = data_total_df.values.tolist()

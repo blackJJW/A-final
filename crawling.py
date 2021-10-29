@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 import time
 
-def url_crawler(company_name, company_code, maxpage):
+def url_crawler(company_name, company_code, maxpage, file_name):
     link_result =[]
     page = 1 
     
@@ -30,9 +30,9 @@ def url_crawler(company_name, company_code, maxpage):
     df_result = pd.DataFrame(result)
         
         
-    df_result.to_csv('./data/news/links/'+company_name+'_links.csv', mode='w', encoding='utf-8-sig')
+    df_result.to_csv('./data/news/links/'+file_name+'_links.csv', mode='w', encoding='utf-8-sig')
 
-def article_crawler(company_name):
+def article_crawler(file_name):
 
     chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
 
@@ -54,7 +54,7 @@ def article_crawler(company_name):
     date_list = []
     article_list = []
 
-    df = pd.read_csv('./data/news/links/'+company_name+'_links.csv')
+    df = pd.read_csv('./data/news/links/'+file_name)
 
     for i in tqdm(range(len(df))):
 
@@ -72,8 +72,10 @@ def article_crawler(company_name):
 
 
     news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-    news_df.to_csv('./data/news/'+company_name+'_news_article.csv', index = False, encoding ="utf-8")
+    news_df.to_csv('./data/news/cr_article/'+file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
+    print("첫 날짜 : "+news_df["date"][0])
+    print("끝 날짜 : "+news_df["date"][len(news_df)-1])
     driver.close()
 
 #-------------------------주식 데이터 다운로드--------------------------------------------------------

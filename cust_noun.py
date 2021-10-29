@@ -2,6 +2,7 @@ from konlpy.tag import Kkma
 import pandas as pd
 from tqdm import tqdm
 import csv
+import json
 
 kkma = Kkma()
 
@@ -47,7 +48,42 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
        nouns_freq[k]['posRatio'] = nouns_freq[k]['up'] / nouns_freq[k]['freq']
        nouns_freq[k]['negRatio'] = nouns_freq[k]['down'] / nouns_freq[k]['freq']
 
-    with open('./data/nouns/'+senti_file_name+'_nouns_freq.csv', 'w') as f:
-      writer = csv.writer(f)
-      writer.writerow(nouns_freq.keys())
-      writer.writerow(nouns_freq.values())
+    with open('./data/nouns/'+senti_file_name+'_nouns_freq.json', 'w') as json_file:
+        json.dump(nouns_freq, json_file)
+     
+
+def pos_neg_points(article, nouns_freq):
+    a_article = pd.read_csv("./data/news/sorted_article/"+article, encoding="utf8")
+
+    with open("./data/nouns/"+nouns_freq, 'r') as f:
+        nouns_freq = json.load(f)
+
+    p_list = []
+    n_list = []
+
+    for i in tqdm(range(len(a_article))):
+      noun_list = kkma.nouns(a_article["article"][i])    
+      lst = set(noun_list)
+      sumPos = 0
+      sumNeg = 0
+      for j in lst:
+        if j in nouns_freq: 
+          sumPos += nouns_freq[j]["posRatio"] 
+          sumNeg += nouns_freq[j]["negRatio"]
+      p_list.append(sumPos)
+      n_list.append(sumNeg)
+
+
+    a_article["sumPos"] = p_list
+    a_article["sumNeg"] = n_list
+    
+    
+    a_article.to_csv('./data/result/a_article_result.csv', index=True, encoding= 'cp949')
+
+
+
+
+
+
+
+
