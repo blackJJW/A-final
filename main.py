@@ -20,12 +20,29 @@ def display_dir_path(dir_name): # dir 내 파일 목록 출력
     file_dir = "./data/"+dir_name 
     list_files = os.listdir(file_dir)
 
+    a = []
+    b = []
+    file_list = {}
+    for v in range(len(list_files)):
+        a.append(v)
+    a.append(len(a))
+
+    for  i in  list_files :
+        b.append(i)
+    b.append("뒤로")
+
+    for x in range(len(list_files)+1):
+        file_list[a[x]] = b[x]
+
     print('\n')
     print('*'*10+'데이터 파일 목록'+'*'*10)
 
-    for i in list_files :
-        print(i)
+    for y in range(len(file_list)) :
+        print(y ,":", file_list[y])
+        
     print('*'*35)
+    
+    return file_list
 
 
 def main_menu():
@@ -94,7 +111,7 @@ def run():
         if menu == 1:
             while 1:
                 menu_a = menu_1()
-
+                
                 if menu_a == 1 :
                     print("1. 뉴스 링크 크롤링")
                     file_name = input("file name : ")
@@ -105,11 +122,14 @@ def run():
 
                 elif menu_a == 2:
                     print("2. 뉴스 기사 크롤링")
-                    display_dir_path('news/links')
+                    a = display_dir_path('news/links')
+                    file_num = input("file_num : ")
 
-                    file_name = input("file_name : ")
-
-                    crawling.article_crawler(file_name)
+                    if a[int(file_num)] == '뒤로':
+                        break
+                    else:
+                        crawling.article_crawler(a[int(file_num)])
+                        
                 elif menu_a == 3:
                     break
                 
@@ -135,29 +155,41 @@ def run():
                 menu_c = menu_3()
 
                 if menu_c == 1:
-                    display_dir_path("news/cr_article")
-                    news_file_name = input("뉴스데이터 파일명을 입력하시오.(확장자 명 포함 필수): ")
+                    a = display_dir_path("news/cr_article")
+                    file_num = input("file_num : ")
                     
-                    gen_df.gen_news_data_df(news_file_name)
+                    if a[int(file_num)] == '뒤로':
+                        break
+                    else:
+                        gen_df.gen_news_data_df(a[int(file_num)])
                 
                 elif menu_c == 2:
-                    display_dir_path("stock")
-                    stock_file_name = input("주식데이터 파일명을 입력하시오.(확장자 명 포함 필수) : ")
-                    new_file_name = input("새로 저장할 파일 이름을 입력하시오.(확장자 명 미 포함 : ")
-                    company_data_df_sorted = gen_df.gen_stock_data_df(stock_file_name)
+                    a = display_dir_path("stock")
+                    file_num = input("file_num : ")
+                    if a[int(file_num)] == '뒤로':
+                        break
+                    else:
+                        new_file_name = input("새로 저장할 파일 이름을 입력하시오.(확장자 명 미 포함 : ")
+                        company_data_df_sorted = gen_df.gen_stock_data_df(a[int(file_num)])
                     
-                    gen_df.gen_total_df(company_data_df_sorted, prob, new_file_name)
+                        gen_df.gen_total_df(company_data_df_sorted, prob, new_file_name)
                     
                 elif menu_c == 3:
-                    display_dir_path("stock/total_df")
-                    stock_file_name = input("주식데이터 파일명을 입력하시오.(확장자 명 포함 필수) : ")
+                    a = display_dir_path("stock/total_df")
+                    file_num_1 = input("file_num : ")
                     
-                    display_dir_path("news/sorted_article")
-                    news_file_name = input("뉴스데이터 파일명을 입력하시오.(확장자 명 포함 필수): ")
+                    if a[int(file_num_1)] == '뒤로':
+                        break
+                    else:
+                        b =display_dir_path("news/sorted_article")
+                        file_num_2 = input("file_num : ")
+                        
+                        if b[int(file_num_2)] == '뒤로':
+                            break
+                        else:
+                            senti_name = input("완성된 데이터 프레임의 이름을 입력하시오. (확장자 명 미 포함) : ")
 
-                    senti_name = input("완성된 데이터 프레임의 이름을 입력하시오. (확장자 명 미 포함) : ")
-                    
-                    gen_df.gen_senti(senti_name, news_file_name, stock_file_name)
+                            gen_df.gen_senti(senti_name, b[int(file_num_2)], a[int(file_num_1)])
                     
                 elif menu_c == 4:
                     break
@@ -166,23 +198,31 @@ def run():
             while 1:
                 menu_d = menu_4()
                 if menu_d == 1:
-
-                    display_dir_path("dict")
-
-                    senti_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
-                    cust_noun.gen_noun_df(senti_name)
+                    a = display_dir_path("dict")
+                    file_num = input("file_num : ")
+                    
+                    if a[int(file_num)] == '뒤로':
+                        break
+                    else:
+                        cust_noun.gen_noun_df(a[int(file_num)])
                 
                 elif menu_d == 2:
 
-                    display_dir_path("dict")
+                    a = display_dir_path("dict")
                     
-                    senti_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
-
-                    display_dir_path("nouns/noun_df")
+                    file_num_1 = input("file_num : ")
                     
-                    noun_df_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+                    if a[int(file_num_1)] == '뒤로':
+                        break
+                    else:
+                        b = display_dir_path("nouns/noun_df")
 
-                    cust_noun.gen_nouns_freq(senti_name, noun_df_name)
+                        file_num_2 = input("file_num : ")
+
+                        if b[int(file_num_2)] == '뒤로':
+                            break
+                        else:
+                            cust_noun.gen_nouns_freq(a[int(file_num_1)], b[int(file_num_2)])
 
                 elif menu_d == 3:
                     break
@@ -191,17 +231,22 @@ def run():
             while 1:
                 menu_e = menu_5()
                 if menu_e == 1:
-                    display_dir_path("news/sorted_article")
+                    a = display_dir_path("news/sorted_article")
                     
-                    news_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+                    file_num_1 = input("file_num : ")
                     
-                    display_dir_path("nouns/nouns_freq")
-                    
-                    nouns_freq_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
-                    
-                    new_file_name = input("파일 명을 입력하시오.(확장자명 미 필수) : ")
-                    
-                    cust_noun.pos_neg_points(new_file_name, news_name, nouns_freq_name)
+                    if a[int(file_num_1)] == '뒤로':
+                        break
+                    else:
+                        b = display_dir_path("nouns/nouns_freq")
+
+                        file_num_2 = input("file_num : ")
+                        if b[int(file_num_2)] == '뒤로':
+                            break
+                        else:
+                            new_file_name = input("파일 명을 입력하시오.(확장자명 미 필수) : ")
+    
+                            cust_noun.pos_neg_points(new_file_name, a[int(file_num_1)], b[int(file_num_2)])
         elif menu == 6:
             pass
         elif menu == 7:
