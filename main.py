@@ -115,20 +115,19 @@ def run():
                 if menu_a == 1 :
                     print("1. 뉴스 링크 크롤링")
                     file_name = input("file name : ")
-                    name = input("company name : ")
                     code = input("company code : ")
                     page = input("max page : ")
-                    crawling.url_crawler(name, code, page, file_name)
+                    crawling.url_crawler(code, page, file_name)
 
                 elif menu_a == 2:
                     print("2. 뉴스 기사 크롤링")
                     a = display_dir_path('news/links')
-                    file_num = input("file_num : ")
+                    file_num = int(input("file_num : "))
 
-                    if a[int(file_num)] == '뒤로':
+                    if a[file_num] == '뒤로':
                         break
                     else:
-                        crawling.article_crawler(a[int(file_num)])
+                        crawling.article_crawler(a[file_num])
                         
                 elif menu_a == 3:
                     break
@@ -156,40 +155,40 @@ def run():
 
                 if menu_c == 1:
                     a = display_dir_path("news/cr_article")
-                    file_num = input("file_num : ")
+                    file_num = int(input("file_num : "))
                     
-                    if a[int(file_num)] == '뒤로':
+                    if a[file_num] == '뒤로':
                         break
                     else:
-                        gen_df.gen_news_data_df(a[int(file_num)])
+                        gen_df.gen_news_data_df(a[file_num])
                 
                 elif menu_c == 2:
                     a = display_dir_path("stock")
-                    file_num = input("file_num : ")
-                    if a[int(file_num)] == '뒤로':
+                    file_num = int(input("file_num : "))
+                    if a[file_num] == '뒤로':
                         break
                     else:
                         new_file_name = input("새로 저장할 파일 이름을 입력하시오.(확장자 명 미 포함 : ")
-                        company_data_df_sorted = gen_df.gen_stock_data_df(a[int(file_num)])
+                        company_data_df_sorted = gen_df.gen_stock_data_df(a[file_num])
                     
                         gen_df.gen_total_df(company_data_df_sorted, prob, new_file_name)
                     
                 elif menu_c == 3:
                     a = display_dir_path("stock/total_df")
-                    file_num_1 = input("file_num : ")
+                    file_num_1 = int(input("file_num : "))
                     
-                    if a[int(file_num_1)] == '뒤로':
+                    if a[file_num_1] == '뒤로':
                         break
                     else:
                         b =display_dir_path("news/sorted_article")
-                        file_num_2 = input("file_num : ")
+                        file_num_2 = int(input("file_num : "))
                         
-                        if b[int(file_num_2)] == '뒤로':
+                        if b[file_num_2] == '뒤로':
                             break
                         else:
                             senti_name = input("완성된 데이터 프레임의 이름을 입력하시오. (확장자 명 미 포함) : ")
 
-                            gen_df.gen_senti(senti_name, b[int(file_num_2)], a[int(file_num_1)])
+                            gen_df.gen_senti(senti_name, b[file_num_2], a[file_num_1])
                     
                 elif menu_c == 4:
                     break
@@ -199,30 +198,30 @@ def run():
                 menu_d = menu_4()
                 if menu_d == 1:
                     a = display_dir_path("dict")
-                    file_num = input("file_num : ")
+                    file_num = int(input("file_num : "))
                     
-                    if a[int(file_num)] == '뒤로':
+                    if a[file_num] == '뒤로':
                         break
                     else:
-                        cust_noun.gen_noun_df(a[int(file_num)])
+                        cust_noun.gen_noun_df(a[file_num])
                 
                 elif menu_d == 2:
 
                     a = display_dir_path("dict")
                     
-                    file_num_1 = input("file_num : ")
+                    file_num_1 = int(input("file_num : "))
                     
-                    if a[int(file_num_1)] == '뒤로':
+                    if a[file_num_1] == '뒤로':
                         break
                     else:
                         b = display_dir_path("nouns/noun_df")
 
-                        file_num_2 = input("file_num : ")
+                        file_num_2 = int(input("file_num : "))
 
-                        if b[int(file_num_2)] == '뒤로':
+                        if b[file_num_2] == '뒤로':
                             break
                         else:
-                            cust_noun.gen_nouns_freq(a[int(file_num_1)], b[int(file_num_2)])
+                            cust_noun.gen_nouns_freq(a[file_num_1], b[file_num_2])
 
                 elif menu_d == 3:
                     break
@@ -233,20 +232,20 @@ def run():
                 if menu_e == 1:
                     a = display_dir_path("news/sorted_article")
                     
-                    file_num_1 = input("file_num : ")
+                    file_num_1 = int(input("file_num : "))
                     
-                    if a[int(file_num_1)] == '뒤로':
+                    if a[file_num_1] == '뒤로':
                         break
                     else:
                         b = display_dir_path("nouns/nouns_freq")
 
-                        file_num_2 = input("file_num : ")
-                        if b[int(file_num_2)] == '뒤로':
+                        file_num_2 = int(input("file_num : "))
+                        if b[file_num_2] == '뒤로':
                             break
                         else:
                             new_file_name = input("파일 명을 입력하시오.(확장자명 미 필수) : ")
     
-                            cust_noun.pos_neg_points(new_file_name, a[int(file_num_1)], b[int(file_num_2)])
+                            cust_noun.pos_neg_points(new_file_name, a[file_num_1], b[file_num_2])
         elif menu == 6:
             pass
         elif menu == 7:

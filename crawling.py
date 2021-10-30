@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 import time
 
-def url_crawler(company_name, company_code, maxpage, file_name):
+def url_crawler(company_code, maxpage, file_name):
     link_result =[]
     page = 1 
     

@@ -103,7 +103,6 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
       if ratio is not None: 
         temp_list_1.append(item)
         temp_list_2.append(ratio)
-        print(p)
 
     total_list = list(map(list.__add__, temp_list_1, temp_list_2))
 
