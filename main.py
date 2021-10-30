@@ -77,6 +77,15 @@ def menu_4():
 
     return int(menu_4)
 
+def menu_5():
+    print("1. test")
+    print("2.  ")
+    print("3. 메인메뉴")
+
+    menu_5 = input("메뉴 선택 : ")
+
+    return int(menu_5)
+
 
 def run():
     while 1: # 메인메뉴 while
@@ -179,7 +188,20 @@ def run():
                     break
 
         elif menu == 5:
-            pass
+            while 1:
+                menu_e = menu_5()
+                if menu_e == 1:
+                    display_dir_path("news/sorted_article")
+                    
+                    news_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+                    
+                    display_dir_path("nouns/nouns_freq")
+                    
+                    nouns_freq_name = input("파일 명을 입력하시오.(확장자명 필수) : ")
+                    
+                    new_file_name = input("파일 명을 입력하시오.(확장자명 미 필수) : ")
+                    
+                    cust_noun.pos_neg_points(new_file_name, news_name, nouns_freq_name)
         elif menu == 6:
             pass
         elif menu == 7:

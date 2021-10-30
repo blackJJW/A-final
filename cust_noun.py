@@ -47,7 +47,8 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
     for k in tqdm(nouns_freq.keys()):
        nouns_freq[k]['posRatio'] = nouns_freq[k]['up'] / nouns_freq[k]['freq']
        nouns_freq[k]['negRatio'] = nouns_freq[k]['down'] / nouns_freq[k]['freq']
-
+       nouns_freq[k]['sameRatio'] = nouns_freq[k]['same'] / nouns_freq[k]['freq']
+               
     nouns_freq = pd.DataFrame.from_dict(nouns_freq, orient='columns')
 
     nouns_dic = nouns_freq.transpose()
@@ -55,7 +56,8 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
 
     nouns_dic = nouns_dic[nouns_dic.freq != 1]
 
-    nouns_dic_del_0 = nouns_dic[(nouns_dic['posRatio'] <= 0.05) & (nouns_dic['negRatio'] <= 0.05)].index
+    nouns_dic_del_0 = nouns_dic[(nouns_dic['posRatio'] <= 0.0005) & (nouns_dic['negRatio'] <= 0.0005)].index
+
     nouns_dic_del = nouns_dic.drop(nouns_dic_del_0)
 
     c=[]
@@ -71,8 +73,20 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
         nouns_dic_del.at[nouns_dic_del.index[i],"posRatio"] = None
         nouns_dic_del.at[nouns_dic_del.index[i],"negRatio"] = None
 
-    nouns_dic_del = nouns_dic_del.dropna(axis=0)
+    nouns_dic_del = nouns_dic_del.dropna(axis=0) # 결측값이 있는 행 전체 삭제
+    
+    d = []
+    e = []
+    for i in range(len(nouns_dic_del)):
+      d.append(max(nouns_dic_del['posRatio'][i], nouns_dic_del['negRatio'][i]) / (nouns_dic_del['negRatio'][i] + nouns_dic_del['posRatio'][i]))
 
+    nouns_dic_del["prob"] = d
+    
+    for i in range(len(nouns_dic_del)):
+      e.append(nouns_dic_del["freq"][i] * nouns_dic_del["prob"][i])
+      
+    nouns_dic_del["weight"] = e
+    
     nouns_dic_del.to_json('./data/nouns/nouns_freq/'+senti_file_name+'_nouns_freq.json', orient= 'index')
 
      

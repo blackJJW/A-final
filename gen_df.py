@@ -74,16 +74,19 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
     def get_stock_price(stock_list, p, date):
         while(True):
            # print(stock_list[p]['date'], date)
-           stock_date = datetime.strptime(stock_list[p][0], '%Y-%m-%d')
-           new_date = datetime.strptime(date, '%Y.%m.%d %H:%M') + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
-           
-           diff = stock_date.date()- new_date.date()
-           # print(stock_date, new_date, diff.days)
-           if  diff.days>=0:
-              return stock_list[p], p
-           else:
-              p = p+1
-              
+          if len(stock_list) > p:
+            stock_date = datetime.strptime(stock_list[p][0], '%Y-%m-%d')
+            new_date = datetime.strptime(date, '%Y.%m.%d %H:%M') + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
+
+            diff = stock_date.date()- new_date.date()
+            # print(stock_date, new_date, diff.days)
+            if  diff.days>=0:
+               return stock_list[p], p
+            else:
+               p = p+1
+          else:
+            return None, p
+            
     data_df_sorted = pd.read_csv('./data/news/sorted_article/'+data_df_sorted, encoding='utf8')
     data_total_df = pd.read_csv('./data/stock/total_df/'+data_total_df, encoding='utf8')
 
@@ -96,9 +99,11 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
     p = 0
 
     for item in news_list: 
-      ratio, p = get_stock_price(stock_list, p, item[1]) 
-      temp_list_1.append(item)
-      temp_list_2.append(ratio)
+      ratio, p = get_stock_price(stock_list, p, item[1])
+      if ratio is not None: 
+        temp_list_1.append(item)
+        temp_list_2.append(ratio)
+        print(p)
 
     total_list = list(map(list.__add__, temp_list_1, temp_list_2))
 
