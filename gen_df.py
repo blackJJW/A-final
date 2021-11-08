@@ -118,5 +118,63 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
     senti_df['index'] = index
     senti_df = senti_df[['index', 'title', 'dates', 'article', 'apply_date', 'ratio' ,'up/down']]
 
+    a = int(len(senti_df)*0.7)
+    senti_df_training = senti_df[:a]
+    senti_df_test = senti_df[a:]
+    
     # csv파일로 저장
     senti_df.to_csv('./data/dict/'+file_name+'_senti.csv', index=True, encoding= 'cp949')
+    senti_df_training.to_csv('./data/dict/'+file_name+'_senti_training.csv', index=True, encoding= 'cp949')
+    senti_df_test.to_csv('./data/dict/'+file_name+'_senti_test.csv', index=True, encoding= 'cp949')
+    
+#--------------주식데이터와 pos, neg 지수 결합---------------------------------------------------------------------
+def senti_stock(file_name, st_data, re_data):
+  stock_data = pd.read_csv('./data/stock/'+st_data, encoding='cp949')
+  stock_data_s = stock_data.sort_values(by='일자', axiss = 0)
+  stock_data_d = stock_data_s.reset_index(drop=False, inplace=False)
+  
+  result_data = pd.read_csv('./data/result'+re_data, encoding='cp949')
+  re_date = sorted(list(set(list(result_data['apply_date']))))
+  
+  l = []
+  pos = []
+  neg = []
+  
+  for i in range(len(re_date)):
+    l_2 = []
+    res_list = list(filter(lambda x: result_data['apply_date'][x] == re_date[i], range(len(result_data))))
+    
+    for j in res_list:
+      pos += result_data['sumPos'][j]
+      neg += result_data['sumNeg'][j]
+    l_2.append(re_date[i])
+    l_2.append(pos/len(res_list))
+    l_2.append(neg/len(res_list))
+    pos = 0
+    neg = 0
+    l.append(l_2)
+    
+  stock_list = list(stock_data_d['일자'])
+  
+  for i in range(len(stock_list)):
+    t = datetime.strptime(stock_list[i], '%Y/%m/%d')
+    stock_list[i] = datetime.strftime(t, '%Y-%m-%d')
+    
+  for j in range(len(l)):
+    for i in range(len(stock_list)):
+      if l[j][0] not in stock_list:
+        stock_data_d.loc[i,'sumPos'] = 10
+        stock_data_d.loc[i,'sumNeg'] = 10
+      elif l[j][0] == stock_list[i]:
+        stock_data_d.loc[i,'sumPos'] = l[j][1]
+        stock_data_d.loc[i,'sumNeg'] = l[j][2]
+      else: 
+        pass 
+      
+  s = []
+  for i in range(len(stock_data_d)):
+    s.append(max(stock_data_d['sumPos'][i], stock_data_d['sumNeg'][i]) / (stock_data_d['sumPos'][i] + stock_data_d['sumNeg'][i]))
+  stock_data_d["prob"] = s
+  
+  stock_data_d.to_csv('./data/result/stock_result/'+file_name+'_result_for_AI.csv', encoding='cp949')
+  

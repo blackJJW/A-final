@@ -1,4 +1,5 @@
 from konlpy.tag import Kkma
+#from eunjeon import Mecab
 import pandas as pd
 from tqdm import tqdm
 import csv
@@ -91,7 +92,7 @@ def gen_nouns_freq(senti_file_name, noun_df_file_name):
 
      
 def pos_neg_points(file_name, article, nouns_freq):
-    a_article = pd.read_csv("./data/news/sorted_article/"+article, encoding="utf8")
+    a_article = pd.read_csv("./data/dict/"+article, encoding="cp949")
 
     with open("./data/nouns/nouns_freq/"+nouns_freq, 'r') as f:
         nouns_freq = json.load(f)

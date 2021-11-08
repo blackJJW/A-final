@@ -143,8 +143,10 @@ def run():
                     date_1 = input("시작 날짜 : ")
                     print("끝 날짜를 입력하시오. ex) 20211014")
                     date_2 = input("끝 날짜 : ")
+                    newname = input("저장할 데이터의 이름을 입력하시오. : ")
+                     
 
-                    crawling.download_stock_data(c_code, date_1, date_2, download_path)
+                    crawling.download_stock_data(c_code, date_1, date_2, download_path, newname)
                 
                 elif menu_b == 2:
                     break
@@ -230,7 +232,7 @@ def run():
             while 1:
                 menu_e = menu_5()
                 if menu_e == 1:
-                    a = display_dir_path("news/sorted_article")
+                    a = display_dir_path("dict")
                     
                     file_num_1 = int(input("file_num : "))
                     

@@ -6,6 +6,8 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 import time
+import os
+import shutil
 
 def url_crawler(company_code, maxpage, file_name):
     link_result =[]
@@ -79,7 +81,7 @@ def article_crawler(file_name):
     driver.close()
 
 #-------------------------주식 데이터 다운로드--------------------------------------------------------
-def download_stock_data(stock_code, date1, date2, dir_path):
+def download_stock_data(stock_code, date1, date2, dir_path, newname):
     chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
 
     #-- 'USB : 시스템에 부착된 장치가 작동하지 않습니다' 오류 회피 ----------------- 
@@ -133,4 +135,7 @@ def download_stock_data(stock_code, date1, date2, dir_path):
     time.sleep(2)
 
     driver.close()
+    
+    filename = max([dir_path + "\\" + f for f in os.listdir(dir_path)], key=os.path.getctime)
+    shutil.move(filename, os.path.join(dir_path, newname+'.csv'))
 
