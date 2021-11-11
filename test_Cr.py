@@ -14,22 +14,20 @@ import urllib.parse
 
 
 class news_act:
-    def __init__(self, company_name, maxpage, file_name):
+    def __init__(self, company_name, file_name):
         self.company_name = company_name
-        self.maxpage = maxpage
+        #self.maxpage = maxpage
         self.file_name = file_name
         
-        KH_news(self.company_name,self.maxpage, self.file_name)
-        KM_news(self.company_name,self.maxpage, self.file_name)
-        NI_news(self.company_name,self.maxpage, self.file_name)
-        DA_news(self.company_name,self.maxpage, self.file_name)
-        MI_news(self.company_name,self.maxpage, self.file_name)
-        Seoul_news(self.company_name, self.maxpage, self.file_name)
-        AT_news(self.company_name, self.maxpage, self.file_name)
-        HG_news(self.company_name, self.maxpage, self.file_name)
+        #KH_news(self.company_name,206, self.file_name)
+        #KM_news(self.company_name,151, self.file_name)
+        #NI_news(self.company_name,115, self.file_name)
+        ###DA_news(self.company_name,204, self.file_name)
+        #MI_news(self.company_name,165, self.file_name)
+        #Seoul_news(self.company_name, 184, self.file_name)
+        #AT_news(self.company_name, 218, self.file_name)
+        HG_news(self.company_name, 99, self.file_name)
         
-        
-
 class KH_news:
     def __init__(self, company_name, maxpage, file_name):
         print("경향신문 크롤링")
@@ -75,6 +73,9 @@ class KH_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -103,19 +104,21 @@ class KH_news:
 
                 driver.switch_to_window(driver.window_handles[0])
 
+            try:
+                title = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[1]/h1').text
+                title_list.append(title)
 
-            title = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[1]/h1').text
-            title_list.append(title)
+                news_date = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[2]/div[1]/div/em').text
+                news_date = news_date.replace('입력 : ', '')
+                date_list.append(news_date)
 
-            news_date = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[2]/div[1]/div/em').text
-            news_date = news_date.replace('입력 : ', '')
-            date_list.append(news_date)
-
-            news_article = driver.find_elements_by_xpath('/html/body/div/div[3]/div[3]/div[1]/p')
-            l = []
-            for i in news_article:
-                l.append(i.text)
-            article_list.append(l)
+                news_article = driver.find_elements_by_xpath('/html/body/div/div[3]/div[3]/div[1]/p')
+                l = []
+                for i in news_article:
+                    l.append(i.text)
+                article_list.append(l)
+            except:
+                pass
 
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
@@ -149,6 +152,10 @@ class KM_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -170,7 +177,7 @@ class KM_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -185,6 +192,8 @@ class KM_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -212,16 +221,17 @@ class KM_news:
 
                 driver.switch_to_window(driver.window_handles[0])
 
+            try:
+                title = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div[2]/h3').text
+                title_list.append(title)
 
-            title = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div[2]/h3').text
-            title_list.append(title)
+                news_date = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div[2]/div/div[1]/span').text
+                date_list.append(news_date)
 
-            news_date = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[1]/div/div[2]/div/div[1]/span').text
-            date_list.append(news_date)
-
-            news_article = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[2]/div[1]/div[1]/div[1]').text
-            article_list.append(news_article)
-
+                news_article = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div[2]/div[1]/div[1]/div[1]').text
+                article_list.append(news_article)
+            except:
+                pass
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/km_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -250,6 +260,10 @@ class NI_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -271,7 +285,7 @@ class NI_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -286,6 +300,9 @@ class NI_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -313,18 +330,18 @@ class NI_news:
 
                 driver.switch_to_window(driver.window_handles[0])
 
+            try:
+                title = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/h3').text
+                title_list.append(title)
 
-            title = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/h3').text
-            title_list.append(title)
+                news_date = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[2]').text
+                news_date = news_date.replace(' 게재', '')
+                date_list.append(news_date)
 
-            news_date = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[2]').text
-            news_date = news_date.replace(' 게재', '')
-            date_list.append(news_date)
-
-            #news_article = driver.find_element_by_xpath('/html/body/div/div[3]/div[3]/div[1]').text
-            news_article = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[3]/p').text
-            article_list.append(news_article)
-
+                news_article = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[3]/p').text
+                article_list.append(news_article)
+            except:
+                pass
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/ni_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -353,6 +370,10 @@ class DA_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -374,7 +395,7 @@ class DA_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -389,6 +410,9 @@ class DA_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -416,16 +440,17 @@ class DA_news:
 
                 driver.switch_to_window(driver.window_handles[0])
 
+            try:
+                title = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[1]/h2').text
+                title_list.append(title)
 
-            title = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[1]/h2').text
-            title_list.append(title)
+                news_date = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[1]/p[2]/span[1]').text
+                date_list.append(news_date)
 
-            news_date = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[1]/p[2]/span[1]').text
-            date_list.append(news_date)
-
-            news_article = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]').text
-            article_list.append(news_article)
-
+                news_article = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]').text
+                article_list.append(news_article)
+            except:
+                pass
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/da_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -454,6 +479,10 @@ class MI_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -475,7 +504,7 @@ class MI_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -490,6 +519,9 @@ class MI_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -517,21 +549,22 @@ class MI_news:
 
                 driver.switch_to_window(driver.window_handles[0])
 
+            try:
+                title = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/div/div').text
+                title_list.append(title)
 
-            title = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/div/div').text
-            title_list.append(title)
+                news_date = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/section/div/ul/li[2]').text
+                news_date = news_date.replace('승인 ', '')
+                date_list.append(news_date)
 
-            news_date = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/section/div/ul/li[2]').text
-            news_date = news_date.replace('승인 ', '')
-            date_list.append(news_date)
-
-            news_article_body = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/div[3]/div/section/div/article[1]/div[2]')
-            article = news_article_body.find_elements_by_tag_name('p')
-            add = []
-            for at in article:
-                add.append(at.text)
-            article_list.append(add)
-
+                news_article_body = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/div[3]/div/section/div/article[1]/div[2]')
+                article = news_article_body.find_elements_by_tag_name('p')
+                add = []
+                for at in article:
+                    add.append(at.text)
+                article_list.append(add)
+            except:
+                pass
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/mi_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -560,6 +593,10 @@ class Seoul_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -581,7 +618,7 @@ class Seoul_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -596,6 +633,9 @@ class Seoul_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -616,13 +656,6 @@ class Seoul_news:
 
             driver.get(df["링크"][i])
 
-            if len(driver.window_handles) >= 2:
-                for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
-                driver.switch_to_window(driver.window_handles[0])
-
             try:
                 title = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[2]/div[2]/h1').text
                 title_list.append(title)
@@ -634,13 +667,6 @@ class Seoul_news:
                 article_list.append(news_article_body)
             except:
                 pass
-            '''
-            article = news_article_body.find_elements_by_tag_name('p')
-            add = []
-            for at in article:
-                add.append(at.text)
-            article_list.append(add)
-            '''
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/seoul_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -669,6 +695,10 @@ class AT_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -678,7 +708,7 @@ class AT_news:
 
         for page in tqdm(range(int(self.maxpage))): 
             
-            url = 'https://www.asiatoday.co.kr/kn_search.php?ob=a&page='+str(page)+'&period=a&period_sd=&period_ed=&scope=a&de_a=&de_b=&de_c=&sword=' + self.company_name
+            url = 'https://www.asiatoday.co.kr/kn_search.php?ob=a&page='+str(page+1)+'&period=a&period_sd=&period_ed=&scope=a&de_a=&de_b=&de_c=&sword=' + self.company_name
             driver.get(url)
 
             links = driver.find_elements_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[2]/dl/dd')
@@ -690,7 +720,7 @@ class AT_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -705,6 +735,9 @@ class AT_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -725,23 +758,18 @@ class AT_news:
 
             driver.get(df["링크"][i])
 
-            if len(driver.window_handles) >= 2:
-                for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
+            try:
+                title = driver.find_element_by_class_name('section_top_box').text
+                title_list.append(title)
 
-                driver.switch_to_window(driver.window_handles[0])
+                news_date = driver.find_element_by_class_name('wr_day').text
+                news_date = news_date.replace('기사승인 ', '')
+                date_list.append(news_date)
 
-            title = driver.find_element_by_class_name('section_top_box').text
-            title_list.append(title)
-
-            news_date = driver.find_element_by_class_name('wr_day').text
-            news_date = news_date.replace('기사승인 ', '')
-            date_list.append(news_date)
-
-            news_article_body = driver.find_element_by_class_name('news_bm').text
-            article_list.append(news_article_body)
-
+                news_article_body = driver.find_element_by_class_name('news_bm').text
+                article_list.append(news_article_body)
+            except:
+                pass
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/at_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -770,6 +798,19 @@ class HG_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                    'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                    'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                    'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                    'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                    'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                    'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -791,7 +832,7 @@ class HG_news:
     
             page += 1
     
-        driver.close()
+        driver.quit()
     
         result= {"링크" : link_result} 
         df_result = pd.DataFrame(result)
@@ -806,6 +847,18 @@ class HG_news:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
+        options.add_argument('headless') # headless 모드 설정
+        options.add_argument("disable-gpu")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -825,35 +878,32 @@ class HG_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
+                
+            try:
+                title = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/h4/span').text
+                title_list.append(title)
 
-            if len(driver.window_handles) >= 2:
-                for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
+                news_date = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/p[2]/span[1]').text
+                news_date = news_date.replace('등록 :', '')
+                date_list.append(news_date)
 
-                driver.switch_to_window(driver.window_handles[0])
-
-            title = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/h4/span').text
-            title_list.append(title)
-
-            news_date = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/p[2]/span[1]').text
-            news_date = news_date.replace('등록 :', '')
-            date_list.append(news_date)
-
-            news_article_body = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[3]/div[1]/div/div/div[2]/div/div[2]').text
-            article_list.append(news_article_body)
-
-
+                news_article_body = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[3]/div[1]/div/div/div[2]/div/div[2]').text
+                article_list.append(news_article_body)
+            except:
+                pass
+        
+        driver.quit()
+        
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/hg_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
-        driver.quit()
+        
         
 
 
-news_act('GS건설', 5, 'GS건설.csv')
+news_act('GS건설', 'GS건설.csv')
 
 
 
