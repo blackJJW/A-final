@@ -19,14 +19,14 @@ class news_act:
         #self.maxpage = maxpage
         self.file_name = file_name
         
-        #KH_news(self.company_name,206, self.file_name)
-        #KM_news(self.company_name,151, self.file_name)
-        #NI_news(self.company_name,115, self.file_name)
-        ###DA_news(self.company_name,204, self.file_name)
-        #MI_news(self.company_name,165, self.file_name)
-        #Seoul_news(self.company_name, 184, self.file_name)
-        #AT_news(self.company_name, 218, self.file_name)
-        HG_news(self.company_name, 99, self.file_name)
+        #KH_news(self.company_name,46, self.file_name)
+        #KM_news(self.company_name,105, self.file_name)
+        #NI_news(self.company_name,22, self.file_name)
+        #DA_news(self.company_name,118, self.file_name)
+        #MI_news(self.company_name,85, self.file_name)
+        #Seoul_news(self.company_name, 60, self.file_name)
+        AT_news(self.company_name, 314, self.file_name)
+        HG_news(self.company_name, 38, self.file_name)
         
 class KH_news:
     def __init__(self, company_name, maxpage, file_name):
@@ -338,7 +338,7 @@ class NI_news:
                 news_date = news_date.replace(' 게재', '')
                 date_list.append(news_date)
 
-                news_article = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[3]/p').text
+                news_article = driver.find_element_by_class_name('article').text
                 article_list.append(news_article)
             except:
                 pass
@@ -903,7 +903,7 @@ class HG_news:
         
 
 
-news_act('GS건설', 'GS건설.csv')
+news_act('셀트리온', '셀트리온.csv')
 
 
 
