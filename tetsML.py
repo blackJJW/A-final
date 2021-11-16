@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 from sklearn.preprocessing import MinMaxScaler
 
-company_data = pd.read_csv('./data/result/GS건설_test_1_result.csv', encoding="cp949")
+company_data = pd.read_csv('./data/result/셀트리온_test_1_result.csv', encoding="cp949")
 company_data.dropna(inplace = True)
 
 

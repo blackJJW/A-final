@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 
-company_data = pd.read_csv('./data/result/GS건설_test_1_result.csv', encoding="cp949")
+company_data = pd.read_csv('./data/result/셀트리온_test_1_result.csv', encoding="cp949")
 company_data.dropna(inplace = True)
 
 p_company_data = company_data[['일자', '종가','sumPos', 'sumNeg', '대비', '등락률', '시가', '고가', '저가', '거래량']]
@@ -151,7 +151,7 @@ X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
 # Define the LSTM RNN model.
 model = Sequential()
 
-number_units = 9
+number_units = 15
 dropout_fraction = 0.2
 
 # Layer 1
@@ -182,7 +182,7 @@ model.compile(optimizer="adam", metrics = ['accuracy'], loss="mean_squared_error
 model.summary()
 
 # Train the model
-model.fit(X_train, y_train, epochs=30, shuffle=False, batch_size=5, verbose=1)
+model.fit(X_train, y_train, epochs=50, shuffle=False, batch_size=5, verbose=1)
 
 # Evaluate the model for loss
 model.evaluate(X_test, y_test)
@@ -264,3 +264,4 @@ a = Counter(t)
 # %%
 a[1] / (a[0]+a[1])
 # %%
+print('Dummy Classifier의 정확도: {0: .4f}'.format(accuracy_score(y_test, predicted)))

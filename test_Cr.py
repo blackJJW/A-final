@@ -19,14 +19,14 @@ class news_act:
         #self.maxpage = maxpage
         self.file_name = file_name
         
-        #KH_news(self.company_name,46, self.file_name)
-        #KM_news(self.company_name,105, self.file_name)
-        #NI_news(self.company_name,22, self.file_name)
-        #DA_news(self.company_name,118, self.file_name)
-        #MI_news(self.company_name,85, self.file_name)
-        #Seoul_news(self.company_name, 60, self.file_name)
-        AT_news(self.company_name, 314, self.file_name)
-        HG_news(self.company_name, 38, self.file_name)
+        #KH_news(self.company_name,100, self.file_name)
+        ###KM_news(self.company_name,50, self.file_name)
+        #NI_news(self.company_name,100, self.file_name)
+        #DA_news(self.company_name,100, self.file_name)
+        MI_news(self.company_name,100, self.file_name)
+        Seoul_news(self.company_name, 100, self.file_name)
+        #AT_news(self.company_name, 100, self.file_name)
+        #HG_news(self.company_name, 100, self.file_name)
         
 class KH_news:
     def __init__(self, company_name, maxpage, file_name):
@@ -76,7 +76,16 @@ class KH_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
-
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
+    
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -96,29 +105,37 @@ class KH_news:
 
             driver.get(df["링크"][i])
             driver.implicitly_wait(10)
-
+ 
             if len(driver.window_handles) >= 2:
                 for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
                 title = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[1]/h1').text
-                title_list.append(title)
 
                 news_date = driver.find_element_by_xpath('/html/body/div/div[3]/div[2]/div[2]/div[1]/div/em').text
                 news_date = news_date.replace('입력 : ', '')
-                date_list.append(news_date)
 
                 news_article = driver.find_elements_by_xpath('/html/body/div/div[3]/div[3]/div[1]/p')
                 l = []
                 for i in news_article:
                     l.append(i.text)
-                article_list.append(l)
+
             except:
-                pass
+                title = None
+                news_date = None
+                l = None
+                
+            title_list.append(title)
+            date_list.append(news_date)
+            article_list.append(l)
 
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
@@ -155,6 +172,15 @@ class KM_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
         
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -194,7 +220,17 @@ class KM_news:
         #----------------------------------------------------------------------------
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
-
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)    
+    
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -213,12 +249,15 @@ class KM_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
-
             if len(driver.window_handles) >= 2:
                 for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
@@ -263,6 +302,15 @@ class NI_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
         
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -303,7 +351,16 @@ class NI_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
-
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -322,26 +379,33 @@ class NI_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
-
+            
             if len(driver.window_handles) >= 2:
                 for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
                 title = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/h3').text
-                title_list.append(title)
 
                 news_date = driver.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[1]/div/div[1]/div[2]').text
                 news_date = news_date.replace(' 게재', '')
-                date_list.append(news_date)
 
                 news_article = driver.find_element_by_class_name('article').text
-                article_list.append(news_article)
             except:
-                pass
+                title = None
+                news_date = None
+                news_article = None
+            
+            article_list.append(news_article)
+            date_list.append(news_date)
+            title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/ni_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -373,6 +437,15 @@ class DA_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
         
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -413,7 +486,16 @@ class DA_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
-
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
+        
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -432,12 +514,16 @@ class DA_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
-
+            
             if len(driver.window_handles) >= 2:
                 for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
@@ -450,7 +536,13 @@ class DA_news:
                 news_article = driver.find_element_by_xpath('/html/body/div[5]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]').text
                 article_list.append(news_article)
             except:
-                pass
+                news_article = None
+                news_date = None
+                title = None
+            
+            article_list.append(news_article)
+            date_list.append(news_date)
+            title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/da_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -482,7 +574,16 @@ class MI_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
-        
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
+    
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
         except:
@@ -522,6 +623,15 @@ class MI_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -541,30 +651,38 @@ class MI_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
-
+            
             if len(driver.window_handles) >= 2:
                 for i in range(len(driver.window_handles)-1):
-                    driver.switch_to_window(driver.window_handles[i+1])
-                    driver.close()
-
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
                 title = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/div/div').text
-                title_list.append(title)
-
+                
                 news_date = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/header/section/div/ul/li[2]').text
                 news_date = news_date.replace('승인 ', '')
-                date_list.append(news_date)
-
+                
                 news_article_body = driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/section/div[3]/div[3]/div/section/div/article[1]/div[2]')
                 article = news_article_body.find_elements_by_tag_name('p')
                 add = []
                 for at in article:
                     add.append(at.text)
-                article_list.append(add)
+
             except:
-                pass
+                add = None
+                news_date = None
+                title = None
+            
+            article_list.append(add)
+            date_list.append(news_date)
+            title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/mi_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -596,6 +714,15 @@ class Seoul_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
         
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -636,6 +763,17 @@ class Seoul_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
+        
+        
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -655,18 +793,33 @@ class Seoul_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
+            
+            if len(driver.window_handles) >= 2:
+                for i in range(len(driver.window_handles)-1):
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
+                driver.switch_to_window(driver.window_handles[0])
 
             try:
                 title = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[2]/div[2]/h1').text
-                title_list.append(title)
-
+            
                 news_date = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[2]/div[2]/div/div[2]/span[1]/span').text
-                date_list.append(news_date)
-
+                
                 news_article_body = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[3]/div[1]/div/div[1]').text
-                article_list.append(news_article_body)
+                
             except:
-                pass
+                news_article_body = None
+                news_date = None
+                title = None
+            
+            article_list.append(news_article_body)
+            date_list.append(news_date)
+            title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/seoul_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -698,6 +851,17 @@ class AT_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)
+
+
         
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -738,6 +902,15 @@ class AT_news:
         options.add_argument('headless') # headless 모드 설정
         options.add_argument("disable-gpu")
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
+        options.add_argument("window-size=1440x900")
+        prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2, 
+                                                            'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2, 
+                                                            'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2, 
+                                                            'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2, 
+                                                            'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2, 
+                                                            'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2, 
+                                                            'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}   
+        options.add_experimental_option('prefs', prefs)        
 
         try:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
@@ -757,19 +930,35 @@ class AT_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
+            
+            if len(driver.window_handles) >= 2:
+                for i in range(len(driver.window_handles)-1):
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
+                driver.switch_to_window(driver.window_handles[0])
 
             try:
                 title = driver.find_element_by_class_name('section_top_box').text
-                title_list.append(title)
 
                 news_date = driver.find_element_by_class_name('wr_day').text
                 news_date = news_date.replace('기사승인 ', '')
-                date_list.append(news_date)
+                
 
                 news_article_body = driver.find_element_by_class_name('news_bm').text
-                article_list.append(news_article_body)
+                
             except:
-                pass
+                title = None
+                news_date = None
+                news_article_body = None
+            
+            title_list.append(title)
+            date_list.append(news_date)
+            article_list.append(news_article_body)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
         news_df.to_csv('./data/news/cr_article/at_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
@@ -878,20 +1067,35 @@ class HG_news:
         for i in tqdm(range(len(df))):
 
             driver.get(df["링크"][i])
+            
+            if len(driver.window_handles) >= 2:
+                for i in range(len(driver.window_handles)-1):
+                    try:
+                        driver.switch_to_window(driver.window_handles[i+1])
+                        driver.close()
+                    except:
+                        pass
+                driver.switch_to_window(driver.window_handles[0])
+            else:
+                driver.switch_to_window(driver.window_handles[0])
                 
             try:
                 title = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/h4/span').text
-                title_list.append(title)
 
                 news_date = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/p[2]/span[1]').text
                 news_date = news_date.replace('등록 :', '')
-                date_list.append(news_date)
 
                 news_article_body = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[3]/div[1]/div/div/div[2]/div/div[2]').text
-                article_list.append(news_article_body)
+
             except:
-                pass
+                title = None
+                news_date = None
+                news_article_body = None
         
+            title_list.append(title)
+            date_list.append(news_date)
+            article_list.append(news_article_body)
+            
         driver.quit()
         
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
@@ -903,7 +1107,7 @@ class HG_news:
         
 
 
-news_act('셀트리온', '셀트리온.csv')
+news_act('오뚜기', '오뚜기.csv')
 
 
 

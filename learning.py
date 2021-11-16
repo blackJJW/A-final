@@ -390,7 +390,7 @@ class ML:
         
         
 #-----[load company data]---------------------------------------------------------
-company_data = pd.read_csv('./data/result/GS건설_test_1_result.csv', encoding="cp949")
+company_data = pd.read_csv('./data/result/셀트리온_test_1_result.csv', encoding="cp949")
 #몇몇 column 삭제하기
 company_data= company_data.drop(columns=["Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
 #renaming the columns of the dataset
