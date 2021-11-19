@@ -14,7 +14,8 @@ company_data = pd.read_csv('./data/result/셀트리온_test_1_result.csv', encod
 company_data.dropna(inplace = True)
 
 p_company_data = company_data[['일자', '종가','sumPos', 'sumNeg', '대비', '등락률', '시가', '고가', '저가', '거래량']]
-p_company_data = p_company_data.rename(columns = {"일자":"date","종가":"close", "대비":"vs", "등락률":"ratio", "시가":"current_price", "고가":"high_price", 
+p_company_data = p_company_data.rename(columns = {"일자":"date","종가":"close", "대비":"vs", "등락률":"ratio", 
+                                                  "시가":"current_price", "고가":"high_price", 
                                                   "저가":"low_price", "거래량":"trade_volume"})
 p_company_data = p_company_data.set_index('date')
 p_company_data['Pct_change'] = p_company_data['close'].pct_change()
@@ -89,10 +90,6 @@ feature_col_number6 = 5
 feature_col_number7 = 6
 feature_col_number8 = 7
 feature_col_number9 = 8
-
-
-
-
 
 target_col_number = 0
 X, y = window_data(p_company_data, window_size, feature_col_number1, 
@@ -218,7 +215,7 @@ plt.show()
 y_pred = predicted
 y_pred_price = y_train_scaler.inverse_transform(y_pred)
 y_test_price = y_train_scaler.inverse_transform(y_test)
-print(y_pred_price)
+print("y_pred:",y_pred_price)
 
 
 

@@ -31,9 +31,9 @@ def gen_news_data_df(name):
     # ------------------------------------------------------------------
 
     # ----------------정규식을 이용하여 기사 내용 중 불 필요한 부분 제거-----------------------------------------------------
-    data_df['title'] = data_df['title'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", x))  
-    data_df['article'] = data_df['article'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", x))
-    data_df['article'] = data_df['article'].apply(lambda x: re.sub(r"오류를 우회하기 위한 함수 추가", " ", x ))
+    data_df['title'] = data_df['title'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", str(x)))  
+    data_df['article'] = data_df['article'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", str(x)))
+    data_df['article'] = data_df['article'].apply(lambda x: re.sub(r"오류를 우회하기 위한 함수 추가", " ", str(x) ))
     # ---------------------------------------------------------------------------------------------------------------------
     data_df_sorted = data_df.sort_values(by='date', axis = 0) # 'date'를 기준으로 오름차순 정렬하여 data_df_sorted로 저장
 
@@ -77,7 +77,7 @@ def gen_senti(file_name, data_df_sorted, data_total_df):
            # print(stock_list[p]['date'], date)
           if len(stock_list) > p:
             stock_date = datetime.strptime(stock_list[p][0], '%Y-%m-%d')
-            new_date = datetime.strptime(date, '%Y.%m.%d %H:%M') + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
+            new_date = datetime.strptime(str(date), '%Y.%m.%d %H:%M') + timedelta(hours=9) # 15시 이후 데이터 -> 다음 날짜
 
             diff = stock_date.date()- new_date.date()
             # print(stock_date, new_date, diff.days)
@@ -238,5 +238,5 @@ def refine_result():
     s.to_csv('./data/셀트리온_test_1_result.csv', encoding='cp949')
       
 
-refine_result()
+
       

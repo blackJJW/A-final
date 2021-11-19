@@ -12,21 +12,19 @@ import shutil
 import urllib.request
 import urllib.parse
 
-
 class news_act:
-    def __init__(self, company_name, file_name):
+    def __init__(self, company_name, file_name, maxpage):
         self.company_name = company_name
-        #self.maxpage = maxpage
+        self.maxpage = maxpage
         self.file_name = file_name
         
-        #KH_news(self.company_name,100, self.file_name)
-        ###KM_news(self.company_name,50, self.file_name)
-        #NI_news(self.company_name,100, self.file_name)
-        #DA_news(self.company_name,100, self.file_name)
-        MI_news(self.company_name,100, self.file_name)
-        Seoul_news(self.company_name, 100, self.file_name)
-        #AT_news(self.company_name, 100, self.file_name)
-        #HG_news(self.company_name, 100, self.file_name)
+        KH_news(self.company_name,self.maxpage, self.file_name)
+        NI_news(self.company_name,self.maxpage, self.file_name)
+        DA_news(self.company_name,self.maxpage, self.file_name)
+        MI_news(self.company_name,self.maxpage, self.file_name)
+        Seoul_news(self.company_name, self.maxpage, self.file_name)
+        AT_news(self.company_name, self.maxpage, self.file_name)
+        HG_news(self.company_name, self.maxpage, self.file_name)
         
 class KH_news:
     def __init__(self, company_name, maxpage, file_name):
@@ -37,7 +35,6 @@ class KH_news:
     
         self.kh_news_url_crawler()
         self.kh_article_crawler()
-
 
     def kh_news_url_crawler(self):
         link_result =[]
@@ -145,7 +142,7 @@ class KH_news:
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
         driver.quit()
 
-class KM_news:
+
     def __init__(self, company_name, maxpage, file_name):
         print("국민일보 크롤링")
         self.company_name= company_name
@@ -806,11 +803,17 @@ class Seoul_news:
                 driver.switch_to_window(driver.window_handles[0])
 
             try:
-                title = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[2]/div[2]/h1').text
+                title = driver.find_element_by_class_name('atit2').text
             
                 news_date = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[2]/div[2]/div/div[2]/span[1]/span').text
                 
-                news_article_body = driver.find_element_by_xpath('/html/body/div[2]/div[6]/div[3]/div[1]/div/div[1]').text
+                news_article_body = driver.find_element_by_class_name('S20_v_article').text
+                
+                if title is None:
+                    title = driver.find_element_by_class_name('articleTitleDiv').text
+                    news_date = driver.find_element_by_class_name('articleDay').text
+                    news_article_body = driver.find_element_by_class_name('articleDiv').text
+                    
                 
             except:
                 news_article_body = None

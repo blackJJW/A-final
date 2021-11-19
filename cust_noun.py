@@ -1,5 +1,4 @@
 from konlpy.tag import Kkma
-#from eunjeon import Mecab
 import pandas as pd
 from tqdm import tqdm
 import csv

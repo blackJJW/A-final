@@ -120,7 +120,6 @@ stocks = pd.DataFrame({
 stocks
 
 plt.figure(figsize=(20,10)) #plotting
-plt.axvline(x= len(X_train), c='r', linestyle='--')
 plt.plot(stocks['Real'], label='Actual Data') #actual plot
 plt.plot(stocks['Predicted'], label='Predicted Data') #predicted plot
 plt.title('Time-Series Prediction')
