@@ -309,6 +309,7 @@ class ML:
 
         print('기존의 데이터 갯수 :', len(self.df))
         print('최소한의 데이터 갯수 : ', len(self.df.iloc[len(self.df)-rp:]))
+        print('\n')
         self.df_part = self.df.iloc[len(self.df)-rp:]
 
         today = self.df_part.iloc[-1]
@@ -351,6 +352,7 @@ class ML:
         #Accuracy : 전체 샘플 중 맞게 예측한 샘플수의 비율
         #Precision(정밀도) : postive라고 예측한 것 중에서 실제 postive인 것
         #Recall(재현율) : 실제 postive중에 예측한 postive 비율
+            print('\n')
             print ('model name : {}'.format(m['name']))
             print (metrics.classification_report(self.test_target, predicted))
 
@@ -425,12 +427,12 @@ hidden_size = 2 #number of features in hidden state
 num_layers = 1  #number of stacked lstm layers
 num_classes = 1 #number of output classes 
 
-#lstm1 = LSTM1(num_classes, input_size, hidden_size, num_layers, X_train.shape[1]).to(device)
+lstm1 = LSTM1(num_classes, input_size, hidden_size, num_layers, X_train.shape[1]).to(device)
 
 num_epochs = 90000 #1000 epochs
 learning_rate = 0.00001 #0.001 lr
 
-#LSTM_predict(lstm1, num_epochs, learning_rate, X_train, y_train, length, a_1)
+LSTM_predict(lstm1, num_epochs, learning_rate, X_train, y_train, length, a_1)
 #------------------------------------------------------------------------------------------------------
 
 #-----[load stock data]---------------------------------------------------
