@@ -163,10 +163,10 @@ model = XGBRegressor(objective='reg:squarederror', n_estimators=1000)
 # Fit the model
 model.fit(X_train, y_train.ravel())
 
-'''
+
 fscore = model.get_booster().get_fscore()
 plot_importance(model)
-'''
+
 
 # Make some predictions
 predicted = model.predict(X_test)
@@ -241,5 +241,7 @@ a = Counter(t)
 print(a)
 print(a[1] / (a[0]+a[1]))
 # %%
+fscore
 
 
+# %%

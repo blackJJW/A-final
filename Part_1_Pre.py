@@ -9,12 +9,11 @@ from torch.autograd import Variable
 mm = MinMaxScaler()
 ss = StandardScaler()
 
+
 class Refine_DF:
     def __init__(self, stock_pos_neg_file_name):
         self.file_name = stock_pos_neg_file_name
         
-        self.refining_df()
-                
     def refining_df(self):
         stock_pos_neg_file = pd.read_csv('./data/stock_pos_neg/'+self.file_name, encoding="cp949")
         stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
@@ -22,10 +21,10 @@ class Refine_DF:
                                                                   "시가":"open","고가":"high", "저가":"low","대비":"diff","등락률":"ratio"})
         stock_pos_neg_file = stock_pos_neg_file.set_index("date")
         stock_pos_neg_file = stock_pos_neg_file.dropna()
-        stock_pos_neg_file_1 = stock_pos_neg_file.copy()
+        self.stock_pos_neg_file_1 = stock_pos_neg_file.copy()
         
-        return stock_pos_neg_file_1
-        
+        return self.stock_pos_neg_file_1
+               
 class Extra_Features:
     def __init__(self, df):
         self.df = df
@@ -126,36 +125,20 @@ class Extra_Features:
         
     def return_df(self):
         return(self.df)
+
+class ready_data_set:
+    def __init__(self, df):
+        self.s_df = df
     
-class Scaler:
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
-        self.prob = 0.7
+    def split_X_y(self):
+        a_df = self.s_df
+        a_1_df = a_df.dropna()
         
-    def prep(self):
+        X= a_1_df.drop(columns='close')
+        #0번째부터 마지막에서 앞까지 
+        X= X.iloc[:-1]
+        #y는 ratio(등락률)로 잡고, 첫번째부터 마지막까지 읽어옴
+        y = a_1_df.iloc[1:, 2:3]
         
-        self.X_ss = ss.fit_transform(self.X)
-        self.y_mm = mm.fit_transform(self.y)
-        
-        #------Test Data------------------------------------------------
-        self.X_train = self.X_ss[:int(len(self.X_ss) * self.prob), :]
-        self.X_test = self.X_ss[int(len(self.X_ss) * self.prob):, :]
-        self.y_train = self.y_mm[:int(len(self.y_mm) * self.prob), :]
-        self.y_test = self.y_mm[int(len(self.y_mm) * self.prob):, :]
-        #---------------------------------------------------------------
-        
-        #numpy형태에서는 학습이 불가능하기 때문에 학습할 수 있는 형태로 변환하기 위해 Torch로 변환
-
-        self.X_train_tensors = Variable(torch.Tensor(self.X_train)) 
-        self.X_test_tensors = Variable(torch.Tensor(self.X_test)) 
-
-        self.y_train_tensors = Variable(torch.Tensor(self.y_train)) 
-        self.y_test_tensors = Variable(torch.Tensor(self.y_test)) 
-
-        self.X_train_tensors_final = torch.reshape(self.X_train_tensors, 
-                                                   (self.X_train_tensors.shape[0], 1, self.X_train_tensors.shape[1])) 
-        self.X_test_tensors_final = torch.reshape(self.X_test_tensors, 
-                                                  (self.X_test_tensors.shape[0], 1, self.X_test_tensors.shape[1]))
-        
-        return self.X_train_tensors_final, self.X_test_tensors_final, self.y_train_tensors, self.y_test_tensors, int(len(self.X_ss) * self.prob)
+        return X, y
+    

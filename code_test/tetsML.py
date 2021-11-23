@@ -10,7 +10,6 @@ from sklearn.preprocessing import MinMaxScaler
 company_data = pd.read_csv('./data/result/셀트리온_test_1_result.csv', encoding="cp949")
 company_data.dropna(inplace = True)
 
-
 # Random Forest Regressor Model 
 p_company_data = company_data[['일자', '종가', 'sumPos', 'sumNeg']]
 p_company_data = p_company_data.rename(columns = {"일자":"date","종가":"close"})

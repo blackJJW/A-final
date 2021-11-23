@@ -13,6 +13,8 @@ from sklearn import metrics
 
 import pandas as pd
 import numpy as np
+import datetime
+from datetime import datetime
 
 #-------------------------------------------
 #     training, test 데이터 크기 , 개수
@@ -33,6 +35,24 @@ import numpy as np
 #       1일 평균 수익률 :
 #------------------------------------------
 
+class set_data:
+    def __init__(self, stock_df):
+        self.stock_df = stock_df
+        
+    def refine_data(self):
+        company_stock = self.stock_df
+        company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
+        
+        # 날짜 데이터를 datetime 형식으로 바꾸고 순서 재정렬
+        company_stock_1['일자'] = company_stock_1['일자'].map(lambda x : datetime.strptime(x, "%Y/%m/%d"))
+        company_stock_1 = company_stock_1.sort_values('일자')
+
+        #컬럼명을 영어로 바꿈
+        company_stock_1.columns = ['date', 'close', 'diff' , 'start', 'high' ,'low', 'volume']
+        company_stock_1 = company_stock_1.set_index('date') # date를 index로 설정
+
+        return company_stock_1
+    
 class ML_Part_1:
     def __init__(self, df):
         self.df = df

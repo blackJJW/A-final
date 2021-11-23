@@ -1,8 +1,47 @@
 import torch 
 import torch.nn as nn
 from torch.autograd import Variable
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+import matplotlib.pyplot as plt 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+mm = MinMaxScaler()
+ss = StandardScaler()
+
+class Scaler:
+    def __init__(self, X, y):
+        self.X = X
+        self.y = y
+        self.prob = 0.7
+        
+    def prep(self):
+        
+        self.X_ss = ss.fit_transform(self.X)
+        self.y_mm = mm.fit_transform(self.y)
+        
+        #------Test Data------------------------------------------------
+        self.X_train = self.X_ss[:int(len(self.X_ss) * self.prob), :]
+        self.X_test = self.X_ss[int(len(self.X_ss) * self.prob):, :]
+        self.y_train = self.y_mm[:int(len(self.y_mm) * self.prob), :]
+        self.y_test = self.y_mm[int(len(self.y_mm) * self.prob):, :]
+        #---------------------------------------------------------------
+        
+        #numpy형태에서는 학습이 불가능하기 때문에 학습할 수 있는 형태로 변환하기 위해 Torch로 변환
+
+        self.X_train_tensors = Variable(torch.Tensor(self.X_train)) 
+        self.X_test_tensors = Variable(torch.Tensor(self.X_test)) 
+
+        self.y_train_tensors = Variable(torch.Tensor(self.y_train)) 
+        self.y_test_tensors = Variable(torch.Tensor(self.y_test)) 
+
+        self.X_train_tensors_final = torch.reshape(self.X_train_tensors, 
+                                                   (self.X_train_tensors.shape[0], 1, self.X_train_tensors.shape[1])) 
+        self.X_test_tensors_final = torch.reshape(self.X_test_tensors, 
+                                                  (self.X_test_tensors.shape[0], 1, self.X_test_tensors.shape[1]))
+        
+        return self.X_train_tensors_final, self.X_test_tensors_final, self.y_train_tensors, self.y_test_tensors, int(len(self.X_ss) * self.prob)
 
 #--------------< LSTM Model >---------------------------------------------      
 class LSTM1(nn.Module): 
@@ -34,4 +73,57 @@ class LSTM1(nn.Module):
     
     return out
 
+class LSTM_predict:
+    def __init__(self, lstm1, num_epochs, learning_rate, X_train, y_train, length, df):
+        self.lstm1 = lstm1
+        self.num_epochs = num_epochs
+        self.learning_rate = learning_rate
+        self.X_train = X_train
+        self.y_train = y_train
+        self.length = length
+        self.df = df
+        
+        self.epochs()
+        self.predict()
+    
+    def epochs(self):
+        loss_function = torch.nn.MSELoss()    # mean-squared error for regression
+        optimizer = torch.optim.Adam(self.lstm1.parameters(), lr=self.learning_rate)  # adam optimizer
 
+        for epoch in range(self.num_epochs): 
+          outputs = self.lstm1.forward(self.X_train.to(device)) #forward pass 
+          optimizer.zero_grad() #caluclate the gradient, manually setting to 0 
+
+          # obtain the loss function 
+          loss = loss_function(outputs, self.y_train.to(device)) 
+
+          loss.backward() #calculates the loss of the loss function 
+
+          optimizer.step() #improve from loss, i.e backprop 
+          if epoch % 100 == 0: 
+            print("Epoch: %d, loss: %1.5f" % (epoch, loss.item()))
+            
+    def predict(self):
+        df_X_ss = ss.transform(self.df.drop(columns='close').iloc[:-1])
+        df_y_mm = mm.transform(self.df.iloc[1:, 2:3])
+
+        df_X_ss = Variable(torch.Tensor(df_X_ss)) #converting to Tensors
+        df_y_mm = Variable(torch.Tensor(df_y_mm))
+        
+        #reshaping the dataset
+        df_X_ss = torch.reshape(df_X_ss, (df_X_ss.shape[0], 1, df_X_ss.shape[1]))
+        train_predict = self.lstm1(df_X_ss.to(device))#forward pass
+        data_predict = train_predict.data.detach().cpu().numpy() #numpy conversion
+        dataY_plot = df_y_mm.data.numpy()
+
+        self.data_predict = mm.inverse_transform(data_predict) #reverse transformation
+        self.dataY_plot = mm.inverse_transform(dataY_plot)
+    
+        plt.figure(figsize=(20,10)) #plotting
+        plt.axvline(x= self.length, c='r', linestyle='--') #size of the training set
+
+        plt.plot(dataY_plot, label='Actual Data') #actual plot
+        plt.plot(data_predict, label='Predicted Data') #predicted plot
+        plt.title('Time-Series Prediction')
+        plt.legend()
+        plt.show() 
