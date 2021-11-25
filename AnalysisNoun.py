@@ -6,10 +6,11 @@ import json
 
 kkma = Kkma()
 
-class Noun_Analysis:
-    def __init__(self, senti_file_name, noun_df_file_name):
+class Noun_Analysis_1:
+    def __init__(self, senti_file_name):
         self.senti_file_name = senti_file_name
-        self.noun_df_file_name = noun_df_file_name
+        
+        self.gen_noun_df()
         
     def gen_noun_df(self):
         company_senti = pd.read_csv('./data/dict/'+self.senti_file_name, encoding="cp949") 
@@ -26,6 +27,13 @@ class Noun_Analysis:
             noun_df = noun_df.append(data_insert, ignore_index=True)
 
         noun_df.to_csv('./data/nouns/noun_df/'+self.senti_file_name+'_noun_df.csv', encoding="cp949")
+
+class Noun_Analysis_2:
+    def __init__(self, senti_file_name, noun_df_file_name):
+        self.senti_file_name = senti_file_name
+        self.noun_df_file_name = noun_df_file_name
+        
+        self.gen_nouns_freq()
         
     def gen_nouns_freq(self):
 
@@ -98,6 +106,8 @@ class Pos_Neg_Points:
     def __init__(self, senti_file_name, nouns_freq_file_name):
         self.senti_file_name = senti_file_name
         self.nouns_freq_name = nouns_freq_file_name
+        
+        self.pos_neg_points()
         
     def pos_neg_points(self):
         a_article = pd.read_csv("./data/dict/"+self.senti_file_name, encoding="cp949")

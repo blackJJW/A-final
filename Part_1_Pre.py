@@ -23,6 +23,8 @@ class Refine_DF:
         stock_pos_neg_file = stock_pos_neg_file.dropna()
         self.stock_pos_neg_file_1 = stock_pos_neg_file.copy()
         
+        self.stock_pos_neg_file_1.to_csv('./data/stock_pos_neg/refined/'+self.file_name+'_refined.csv', encoding='cp949')
+        
         return self.stock_pos_neg_file_1
                
 class Extra_Features:

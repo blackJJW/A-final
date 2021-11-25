@@ -4,6 +4,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 #cross_validation
 from sklearn.model_selection import KFold
@@ -15,7 +19,8 @@ import pandas as pd
 import numpy as np
 import datetime
 from datetime import datetime
-
+import sys
+from tqdm import tqdm
 #-------------------------------------------
 #     training, test 데이터 크기 , 개수
 #     모델 별 (LogisticRegression, KNeighborsClassifier,
@@ -35,12 +40,14 @@ from datetime import datetime
 #       1일 평균 수익률 :
 #------------------------------------------
 
-class set_data:
-    def __init__(self, stock_df):
-        self.stock_df = stock_df
+class Set_Data:
+    def __init__(self, stock_file_name):
+        self.stock_file_name = stock_file_name
+        
+        self.refine_data()
         
     def refine_data(self):
-        company_stock = self.stock_df
+        company_stock = pd.read_csv('./data/stock/'+self.stock_file_name, encoding="cp949")
         company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
         
         # 날짜 데이터를 datetime 형식으로 바꾸고 순서 재정렬
@@ -51,11 +58,12 @@ class set_data:
         company_stock_1.columns = ['date', 'close', 'diff' , 'start', 'high' ,'low', 'volume']
         company_stock_1 = company_stock_1.set_index('date') # date를 index로 설정
 
-        return company_stock_1
+        company_stock_1.to_csv('./data/stock/refined/'+self.stock_file_name+'_refined.csv', encoding='cp949')
     
 class ML_Part_1:
-    def __init__(self, df):
-        self.df = df
+    def __init__(self, stock_file_name):
+        self.df =  pd.read_csv('./data/stock/refined/'+stock_file_name+'_refined.csv', encoding='cp949')
+        self.stock_file_name = stock_file_name
         
         self.ready()
         self.cross_accuracy()
@@ -67,7 +75,8 @@ class ML_Part_1:
                 return 1 #내일의 종가가 오르거나 그대로면 1
             else :
                 return 0
-
+            
+        self.df = self.df.set_index('date')
         self.df['fluctuation'] = (self.df['close'].shift(-1)-self.df['close']).apply(up_down)
         self.df.drop('diff', axis=1, inplace=True)
 
@@ -84,7 +93,6 @@ class ML_Part_1:
         company_stock_1_df = company_stock_1_df.drop('fluctuation', axis = 1)
 
         self.train, self.test, self.train_target, self.test_target = train_test_split(company_stock_1_df, target, test_size = 0.3, shuffle=False ) 
-
     def cross_accuracy(self):
         #cross_val_score에서 분류모형의 scoring은 accuracy이다.
         kfold = KFold(n_splits = 3, shuffle = False, random_state = None)
@@ -102,14 +110,17 @@ class ML_Part_1:
                 {'name' : 'DecisonTree', 'model' : decisiontree}, {'name' : 'RandomForest', 'model' : forest},
                 {'name' : 'NaiveBayes', 'model' : naive}]
 
+        temp = sys.stdout
+        sys.stdout = open('./data/report/cv_acc/'+self.stock_file_name+'_cv_accuracy_report.txt', 'w')
+
         def cv_accuracy(models):
-            for m in models:
+            for m in tqdm(models):
                 print("Model {} CV score : {:.4f}".format(m['name'], 
                                                           np.mean(cross_val_score(m['model'], 
                                                                                   self.train, self.train_target, cv=kfold))))
         cv_accuracy(self.models)
         
-        for m in self.models : 
+        for m in tqdm(self.models) : 
             model = m['model']
             model.fit(self.train, self.train_target)
 
@@ -128,17 +139,22 @@ class ML_Part_1:
             print (metrics.confusion_matrix(self.test_target, predicted))
 
             print ('Accuracy Score : {:.4f}\n'.format(metrics.accuracy_score(self.test_target, predicted)))
+        sys.stdout.close()
+        sys.stdout = temp
 
+        
     def income_rate(self):
         def rate_of_return():
             df['percent'] = round((df.close-df.close.shift(1))/df.close.shift(1)*100, 2) 
             #round(0.4457, 2) > 0.4475를 소수점 아래 둘째 자리로 반올림한다.
-            for i in range(len(df)-1):
+            for i in tqdm(range(len(df)-1)):
                 if (df.loc[i, 'predicted'] == 0):
                     df.loc[i+1, 'percent'] = df.loc[i+1, 'percent']
-                    
         
-        for m in self.models : 
+        temp = sys.stdout           
+        sys.stdout = open('./data/report/income_rate/'+self.stock_file_name+'_income_rate_report.txt', 'w')
+        
+        for m in tqdm(self.models) : 
             model = m['model']
             model.fit(self.train, self.train_target)
 
@@ -154,3 +170,6 @@ class ML_Part_1:
             print('첫날을 제외한 거래일수 : {}'.format(len(df)))
             print('누적 수익률 : {}'.format(round(df['percent'].sum(), 2)))
             print('1일 평균 수익률 : {}\n'.format(round(df['percent'].sum()/(len(df)-1),2)))
+        
+        sys.stdout.close()
+        sys.stdout = temp

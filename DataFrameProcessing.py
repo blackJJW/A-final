@@ -38,7 +38,7 @@ class Get_Stock_DF:
         self.date2 = date2 # 주식 데이터 조회 끝 날짜
         self.dir_path = dir_path # 다운로드 경로
         self.prob = prob # 정규분포 기준 확률
-    
+        
     #-------- selenium을 이용,  KRX사이트를 통해 주식 데이터를 csv파일 형식으로 다운로드 ----------------------------------   
     def download_stock_data(self):
         chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
@@ -47,7 +47,7 @@ class Get_Stock_DF:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         #----------------------------------------------------------------------------
-        options.add_argument('headless') # headless 모드 설정
+
         options.add_argument("disable-gpu") # gpu 모드 해제
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64 Trident/7.0; rv:11.0) like Gecko")
         options.add_argument("window-size=1440x900")
@@ -67,21 +67,19 @@ class Get_Stock_DF:
             chromedriver_autoinstaller.install(True) # 크롬 드라이버 자동 설치
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
 
-        driver.implicitly_wait(5) # 5초대기
+        driver.implicitly_wait(10) 
 
         driver.get('http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020103')
-        driver.implicitly_wait(5)
-
+        
         driver.get('http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020103')
-        driver.implicitly_wait(5)
-
+        
         input_code = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[1]/td/div/div/p/input')
         input_code.clear()
         input_code.send_keys(self.company_code)
 
         find_code = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[1]/td/div/div/p/img')
         find_code.click()
-        driver.implicitly_wait(5)
+        
 
         date_1 = driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[1]/div/table/tbody/tr[2]/td/div/div/input[1]')
         date_1.clear()
@@ -97,13 +95,15 @@ class Get_Stock_DF:
         time.sleep(2)
 
         driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[2]/div/p[2]/button[2]/img').click()
-        driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[2]/div[2]/div[2]/div/div[2]').click()
+        driver.find_element_by_xpath('/html/body/div[2]/section[2]/section/section/div/div/form/div[2]/div[2]/div[2]/div/div[2]/a').click()
         time.sleep(2)
 
         driver.close()
 
         filename = max([self.dir_path + "\\" + f for f in os.listdir(self.dir_path)], key=os.path.getctime)
         shutil.move(filename, os.path.join(self.dir_path, self.company_name+'_'+self.date1+'_'+self.date2+'.csv'))
+        
+        self.gen_stock_data_df()
         
     #-----------회사 주식 데이터 ---------------------------------------------------------------------------------------------
     def gen_stock_data_df(self):
@@ -112,6 +112,8 @@ class Get_Stock_DF:
         company_data_df_sorted = company_data.sort_values(by='일자', axis = 0) # '일자'를 기준으로 오름차순으로 정렬하고 저장
         # -------------------------------------------------------------------------------------------------------------------
         company_data_df_sorted.to_csv('./data/stock/'+self.company_name+'_'+self.date1+'_'+self.date2+'.csv', encoding="cp949")
+        
+        self.gen_stock_data_total_df()
     #------------------------------------------------------------------------------------------------------------------------
     
     #------------total_df 생성------------------------------------------------------

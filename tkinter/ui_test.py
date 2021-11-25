@@ -4,7 +4,7 @@ import tkinter.font as font
 root = Tk()
 root.geometry("1920x1080")
 
-bg = PhotoImage(file = "ai_back.png")
+#bg = PhotoImage(file = "ai_back.png")
 canvas1 = Canvas( root, width = 1920, height = 1080)
 canvas1.pack(fill = "both", expand = True)
 canvas1.create_image( 0, 0, image = bg, anchor = "nw")

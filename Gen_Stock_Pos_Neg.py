@@ -7,6 +7,8 @@ class Refine_Result:
         self.result_file_name = result_file_name
         self.stock_file_name = stock_file_name
         
+        self.refine_result()
+        
     def refine_result(self):
 
         company_result = pd.read_csv("./data/result/"+self.result_file_name, encoding="cp949")

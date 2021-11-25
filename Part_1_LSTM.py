@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
+import datetime
 import matplotlib.pyplot as plt 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -124,6 +125,7 @@ class LSTM_predict:
 
         plt.plot(dataY_plot, label='Actual Data') #actual plot
         plt.plot(data_predict, label='Predicted Data') #predicted plot
-        plt.title('Time-Series Prediction')
+        plt.title('LSTM Time-Series Prediction')
         plt.legend()
         plt.show() 
+        

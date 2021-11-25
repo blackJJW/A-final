@@ -16,16 +16,16 @@ class Prep_Regressor:
         self.stock_pos_neg = stock_pos_neg
     
     def refining_df(self):
-        company_data = pd.read_csv('./data/result/'+self.stock_pos_neg, encoding="cp949")
+        company_data = pd.read_csv('./data/stock_pos_neg/'+self.stock_pos_neg, encoding="cp949")
         company_data.dropna(inplace = True)
 
-        # Random Forest Regressor Model 
+        #Regressor Model 
         p_company_data = company_data[['일자', '종가', 'sumPos', 'sumNeg']]
         p_company_data = p_company_data.rename(columns = {"일자":"date","종가":"close"})
         p_company_data = p_company_data.set_index('date')
         p_company_data['Pct_change'] = p_company_data['close'].pct_change()
         p_company_data.dropna(inplace = True)
-            
+        
         return p_company_data
     
 class RF_Regressor:
@@ -134,6 +134,11 @@ class RF_Regressor:
         print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(self.y_test_result, self.predicted)))
         print('R-squared :', metrics.r2_score(self.y_test_result, self.predicted))
 
+        rmse = 'RF - Root Mean Squared Error :'+str(np.sqrt(metrics.mean_squared_error(self.y_test_result, self.predicted)))+'\n'
+        r_sqr = 'RF - R-squared :'+str(metrics.r2_score(self.y_test_result, self.predicted))+'\n'
+    
+        return rmse, r_sqr
+    
     def inverse_predict(self):
         # Recover the original prices instead of the scaled version
         self.predicted_prices = self.y_test_scaler.inverse_transform(self.predicted.reshape(-1, 1))
@@ -261,7 +266,12 @@ class XGBoost_Regressor:
         # Evaluating the model
         print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(self.y_test_result, self.predicted)))
         print('R-squared :', metrics.r2_score(self.y_test_result, self.predicted))
-
+        
+        rmse = 'XGB - Root Mean Squared Error :'+str(np.sqrt(metrics.mean_squared_error(self.y_test_result, self.predicted)))+'\n'
+        r_sqr = 'XGB - R-squared :'+str(metrics.r2_score(self.y_test_result, self.predicted))+'\n'
+    
+        return rmse, r_sqr
+    
     def inverse_predict(self):
         # Recover the original prices instead of the scaled version
         self.predicted_prices = self.y_test_scaler.inverse_transform(self.predicted.reshape(-1, 1))
