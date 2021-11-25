@@ -155,7 +155,7 @@ class KH_news:
 
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/kh_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/kh_news/kh_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -328,7 +328,7 @@ class NI_news:
             title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/ni_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/ni_news/ni_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -417,7 +417,7 @@ class DA_news:
             title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/da_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/da_news/da_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -509,7 +509,7 @@ class MI_news:
             title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/mi_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/mi_news/mi_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -596,7 +596,7 @@ class Seoul_news:
             title_list.append(title)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/seoul_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/seoul_news/seoul_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -684,7 +684,7 @@ class AT_news:
             article_list.append(news_article_body)
 
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/at_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/at_news/at_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -774,7 +774,7 @@ class HG_news:
         driver.quit()
         
         news_df = pd.DataFrame({"title" : title_list, "date" : date_list, "article" : article_list})
-        news_df.to_csv('./data/news/cr_article/hg_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+        news_df.to_csv('./data/news/cr_article/hg_news/hg_'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
 
         print("첫 날짜 : "+news_df["date"][0])
         print("끝 날짜 : "+news_df["date"][len(news_df)-1])
@@ -783,9 +783,13 @@ class News_DF_Processing:
     def __init__(self, file_name):
         self.file_name = file_name
         
+        self.open_news()
+        self.merge_news()
+        self.gen_news_data_df()
+        
     def open_news(self):
         try:
-            kh_news = pd.read_csv('./data/news/cr_article/kh_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            kh_news = pd.read_csv('./data/news/cr_article/kh_news/kh_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             kh_n = kh_news.copy()
             kh_n = kh_n.dropna()
             kh_n = kh_n.reset_index(drop=False)
@@ -793,7 +797,7 @@ class News_DF_Processing:
         except:
             self.kh_n = None
         try:
-            ni_news = pd.read_csv('./data/news/cr_article/ni_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            ni_news = pd.read_csv('./data/news/cr_article/ni_news/ni_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             ni_n = ni_news.copy()
             ni_n = ni_n.dropna()
             ni_n = ni_n.reset_index(drop=False)
@@ -805,7 +809,7 @@ class News_DF_Processing:
         except:
             self.ni_n = None
         try:
-            da_news = pd.read_csv('./data/news/cr_article/da_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            da_news = pd.read_csv('./data/news/cr_article/da_news/da_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             da_n = da_news.copy()
             da_n = da_n.dropna()
             da_n = da_n.reset_index(drop=False)
@@ -817,7 +821,7 @@ class News_DF_Processing:
         except:
             self.da_n = None
         try:
-            mi_news = pd.read_csv('./data/news/cr_article/mi_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            mi_news = pd.read_csv('./data/news/cr_article/mi_news/mi_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             mi_n = mi_news.copy()
             mi_n = mi_n.dropna()
             mi_n = mi_n.reset_index(drop=False)
@@ -825,7 +829,7 @@ class News_DF_Processing:
         except:
             self.mi_n = None
         try:
-            seoul_news = pd.read_csv('./data/news/cr_article/seoul_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            seoul_news = pd.read_csv('./data/news/cr_article/seoul_news/seoul_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             seoul_n = seoul_news.copy()
             seoul_n = seoul_n.dropna()
             seoul_n = seoul_n.reset_index(drop=False)
@@ -837,23 +841,27 @@ class News_DF_Processing:
         except:
             self.seoul_n = None
         try:
-            at_news = pd.read_csv('./data/news/cr_article/at_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            at_news = pd.read_csv('./data/news/cr_article/at_news/at_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             at_n = at_news.copy()
             at_n = at_n.dropna()
             at_n = at_n.reset_index(drop=False)
             self.at_n = at_n.drop(['index'], axis = 1)        
 
-            for i in range(len(at_n)):
+            for i in range(len(self.at_n)):
                 a_1 = datetime.strptime(self.at_n['date'][i], format_at)
                 self.at_n['date'][i] = str(datetime.strftime(a_1, format_l))
         except:
             self.at_n = None
         try:
-            hg_news = pd.read_csv('./data/news/cr_article/hg_news/'+self.file_name+'_news_article.csv', index = False, encoding ="utf-8")
+            hg_news = pd.read_csv('./data/news/cr_article/hg_news/hg_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             hg_n = hg_news.copy()
             hg_n = hg_n.dropna()
             hg_n = hg_n.reset_index(drop=False)
-            self.hg_n = hg_n.drop(['index'], axis = 1)        
+            self.hg_n = hg_n.drop(['index'], axis = 1) 
+            
+            for i in range(len(self.hg_n)):
+                a_1 = datetime.strptime(self.at_n['date'][i], format_seoul)
+                self.at_n['date'][i] = str(datetime.strftime(a_1, format_l))       
         except:
             self.hg_n = None
     
@@ -882,3 +890,19 @@ class News_DF_Processing:
 
         data_df_sorted.to_csv('./data/news/sorted_article/'+self.file_name+'_data_df_sorted.csv', index = False, encoding ="utf-8")
     # ---------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 

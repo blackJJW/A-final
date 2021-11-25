@@ -350,7 +350,7 @@ class Page7(Page):
             for i in range(len(a), 0, -1):
              text4.insert(1.0, str(i-1)+':'+a[i-1]+'\n')
              
-       label_stock_file_name = tk.Label(self, text="result 파일 번호 : ", font="나눔고딕 10")
+       label_stock_file_name = tk.Label(self, text="stock 파일 번호 : ", font="나눔고딕 10")
        label_stock_file_name.place(relx=0.03, rely =0.1)
        ent_stock_file_name = tk.Entry(self)
        ent_stock_file_name.place(relx=0.14, rely =0.1)
