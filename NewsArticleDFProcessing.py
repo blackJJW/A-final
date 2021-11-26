@@ -27,6 +27,7 @@ format_seoul = '%Y-%m-%d %H:%M'
 
 class News_Act:
     def __init__(self, company_name, file_name, maxpage):
+        print("NewsArticleDFProcessing - News_Act  Start")
         self.company_name = company_name
         self.maxpage = maxpage
         self.file_name = file_name
@@ -38,8 +39,11 @@ class News_Act:
         Seoul_news(self.company_name, self.maxpage, self.file_name)
         AT_news(self.company_name, self.maxpage, self.file_name)
         HG_news(self.company_name, self.maxpage, self.file_name)
+        
+        print("NewsArticleDFProcessing - News_Act  Done")
     
     def selenium_set(self):
+        print("------ setting selenium  Start -----")
         chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0] #크롬 드라이버 버전 확인
 
         #-- 'USB : 시스템에 부착된 장치가 작동하지 않습니다' 오류 회피 ---------------- 
@@ -66,6 +70,7 @@ class News_Act:
             driver = webdriver.Chrome(f'./chromedriver/{chrome_ver}/chromedriver.exe', options = options)
 
         driver.implicitly_wait(180) # 5초대기
+        print("------ setting selenium  Done -----")
         
         return driver
       
@@ -781,6 +786,7 @@ class HG_news:
 
 class News_DF_Processing:
     def __init__(self, file_name):
+        print("NewsArticleDFProcessing - News_DF_Processing  Start")
         self.file_name = file_name
         
         self.open_news()
@@ -788,107 +794,152 @@ class News_DF_Processing:
         self.gen_news_data_df()
         
     def open_news(self):
+        print("NewsArticleDFProcessing - News_DF_Processing - open_news  Start")
         try:
+            print("----- opening kh_news Start -----")
             kh_news = pd.read_csv('./data/news/cr_article/kh_news/kh_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             kh_n = kh_news.copy()
             kh_n = kh_n.dropna()
             kh_n = kh_n.reset_index(drop=False)
             self.kh_n = kh_n.drop(['index'], axis = 1)
+            print("----- opening kh_news Done -----")
         except:
+            print("----- kh_news = None -----")
             self.kh_n = None
         try:
+            print("----- opening ni_news Start -----")
             ni_news = pd.read_csv('./data/news/cr_article/ni_news/ni_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             ni_n = ni_news.copy()
             ni_n = ni_n.dropna()
             ni_n = ni_n.reset_index(drop=False)
             self.ni_n = ni_n.drop(['index'], axis = 1)        
 
-            for i in range(len(self.ni_n)):  
+            print("----- transforming date type Start -----")
+            for i in tqdm(range(len(self.ni_n))):  
                 a_1 = datetime.strptime(str(self.ni_n['date'][i]), format_ni)
                 self.ni_n['date'][i] = str(datetime.strftime(a_1, format_l))
+            print("----- transforming date type Done -----")
+            print("----- opening ni_news Done -----")
         except:
+            print("----- ni_news = None -----")
             self.ni_n = None
         try:
+            print("----- opening da_news Start -----")
             da_news = pd.read_csv('./data/news/cr_article/da_news/da_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             da_n = da_news.copy()
             da_n = da_n.dropna()
             da_n = da_n.reset_index(drop=False)
             self.da_n = da_n.drop(['index'], axis = 1)
             
-            for i in range(len(self.da_n)):
+            print("----- transforming date type Start -----")
+            for i in tqdm(range(len(self.da_n))):
               a_1 = datetime.strptime(self.da_n['date'][i], format_ni)
-              self.da_n['date'][i] = str(datetime.strftime(a_1, format_l))      
+              self.da_n['date'][i] = str(datetime.strftime(a_1, format_l))
+            print("----- transforming date type Done -----")
+            print("----- opening da_news Done -----")      
         except:
+            print("----- da_news = None -----")
             self.da_n = None
         try:
+            print("----- opening mi_news Start -----")
             mi_news = pd.read_csv('./data/news/cr_article/mi_news/mi_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             mi_n = mi_news.copy()
             mi_n = mi_n.dropna()
             mi_n = mi_n.reset_index(drop=False)
-            self.mi_n = mi_n.drop(['index'], axis = 1)        
+            self.mi_n = mi_n.drop(['index'], axis = 1)   
+            print("----- opening da_news Done -----")     
         except:
+            print("----- da_news = None -----")
             self.mi_n = None
         try:
+            print("----- opening seoul_news Start -----")
             seoul_news = pd.read_csv('./data/news/cr_article/seoul_news/seoul_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             seoul_n = seoul_news.copy()
             seoul_n = seoul_n.dropna()
             seoul_n = seoul_n.reset_index(drop=False)
             self.seoul_n = seoul_n.drop(['index'], axis = 1)
             
-            for i in range(len(self.seoul_n)):
+            print("----- transforming date type Start -----")
+            for i in tqdm(range(len(self.seoul_n))):
               a_1 = datetime.strptime(self.seoul_n['date'][i], format_seoul)
-              self.seoul_n['date'][i] = str(datetime.strftime(a_1, format_l))        
+              self.seoul_n['date'][i] = str(datetime.strftime(a_1, format_l))  
+            print("----- transforming date type Done -----")
+            print("----- opening seoul_news Done -----")            
         except:
+            print("----- seoul_news = None -----") 
             self.seoul_n = None
         try:
+            print("----- opening at_news Start -----") 
             at_news = pd.read_csv('./data/news/cr_article/at_news/at_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             at_n = at_news.copy()
             at_n = at_n.dropna()
             at_n = at_n.reset_index(drop=False)
             self.at_n = at_n.drop(['index'], axis = 1)        
-
-            for i in range(len(self.at_n)):
+            print("----- transforming date type Start -----")
+            for i in tqdm(range(len(self.at_n))):
                 a_1 = datetime.strptime(self.at_n['date'][i], format_at)
                 self.at_n['date'][i] = str(datetime.strftime(a_1, format_l))
+            print("----- transforming date type Done -----")
+            print("----- opening at_news Done -----")      
         except:
+            print("----- at_news = None -----")
             self.at_n = None
         try:
+            print("----- opening hg_news Start -----")
             hg_news = pd.read_csv('./data/news/cr_article/hg_news/hg_'+self.file_name+'_news_article.csv', encoding ="utf-8")
             hg_n = hg_news.copy()
             hg_n = hg_n.dropna()
             hg_n = hg_n.reset_index(drop=False)
             self.hg_n = hg_n.drop(['index'], axis = 1) 
-            
-            for i in range(len(self.hg_n)):
+            print("----- transforming date type Start -----")
+            for i in tqdm(range(len(self.hg_n))):
                 a_1 = datetime.strptime(self.at_n['date'][i], format_seoul)
-                self.at_n['date'][i] = str(datetime.strftime(a_1, format_l))       
+                self.at_n['date'][i] = str(datetime.strftime(a_1, format_l))
+            print("----- transforming date type Done -----")
+            print("----- opening hg_news Done -----")             
         except:
+            print("----- hg_news = None -----")
             self.hg_n = None
+            
+        print("NewsArticleDFProcessing - News_DF_Processing - open_news  Done")
     
     def merge_news(self):
+        print("NewsArticleDFProcessing - News_DF_Processing - merge_news  Start")
+        print("----- concat dfs Start -----")
         result_news = pd.concat([self.ni_n, self.mi_n, self.kh_n, self.seoul_n,
                                  self.da_n, self.at_n, self.hg_n], ignore_index=True)
         
+        print("----- concat dfs Done -----")
         result_news = result_news.dropna()
         result_news = result_news.reset_index(drop=False)
         result = result_news.drop(['index'], axis=1)
 
+        print("----- saving csv Start -----")
         result.to_csv("./data/news/cr_article/result/"+self.file_name+"_news_article_result.csv", encoding="utf8", index=False)
-    
+        print("----- saving csv Done -----")
+        print("NewsArticleDFProcessing - News_DF_Processing - merge_news  Done")
+        
     #-----------회사 뉴스 데이터----------------------------------------------------------------------------------------------------------
     def gen_news_data_df(self):
+        print("NewsArticleDFProcessing - News_DF_Processing - gen_news_data_df  Start")
+        print("----- reading csv Start -----")
         # ---news csv파일 open --------------------------------------------
         data_df = pd.read_csv('./data/news/cr_article/result/'+self.file_name+"_news_article_result.csv", encoding="utf8")
         # ------------------------------------------------------------------
-
+        print("----- reading csv Done -----")
+        print("----- clearing strings Start -----")
         # ----------------정규식을 이용하여 기사 내용 중 불 필요한 부분 제거-----------------------------------------------------
         data_df['title'] = data_df['title'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", str(x)))  
         data_df['article'] = data_df['article'].apply(lambda x: re.sub(r'[^ a-zA-z ㅣㄱ-ㅣ가-힣]+', " ", str(x)))
         data_df['article'] = data_df['article'].apply(lambda x: re.sub(r"오류를 우회하기 위한 함수 추가", " ", str(x) ))
         # ---------------------------------------------------------------------------------------------------------------------
+        print("----- clearing strings Done -----")
         data_df_sorted = data_df.sort_values(by='date', axis = 0) # 'date'를 기준으로 오름차순 정렬하여 data_df_sorted로 저장
-
+        print("----- saving csv Start -----")
         data_df_sorted.to_csv('./data/news/sorted_article/'+self.file_name+'_data_df_sorted.csv', index = False, encoding ="utf-8")
+        print("----- saving csv Done -----")
+        print("NewsArticleDFProcessing - News_DF_Processing - gen_news_data_df  Done")
+        print("NewsArticleDFProcessing - News_DF_Processing  Done")
     # ---------------------------------------------------------------------------------------------------------------------------------------
 
 

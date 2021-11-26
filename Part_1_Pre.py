@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
@@ -14,27 +15,37 @@ ss = StandardScaler()
 
 class Refine_DF:
     def __init__(self, stock_pos_neg_file_name):
+        print("Part_1_Pre - Refine_DF  Start")
         self.file_name = stock_pos_neg_file_name
         
     def refining_df(self):
+        print("Part_1_Pre - Refine_DF - refining_df  Start")
+        print("----- reading csv Start -----")
         stock_pos_neg_file = pd.read_csv('./data/stock_pos_neg/'+self.file_name, encoding="cp949")
+        print("----- reading csv Done -----")
+        print("----- dropping columns Start -----")
         try:
             stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0.1","Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
         except:
             stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
         stock_pos_neg_file = stock_pos_neg_file.rename(columns = {"일자":"date","종가":"close", "거래량":"volume",
                                                                   "시가":"open","고가":"high", "저가":"low","대비":"diff","등락률":"ratio"})
-        print(stock_pos_neg_file)
+        print("----- dropping columns Done -----")
         stock_pos_neg_file = stock_pos_neg_file.set_index("date")
         stock_pos_neg_file = stock_pos_neg_file.dropna()
         self.stock_pos_neg_file_1 = stock_pos_neg_file.copy()
         
+        print("----- saving csv Start -----")
         self.stock_pos_neg_file_1.to_csv('./data/stock_pos_neg/refined/'+self.file_name+'_refined.csv', encoding='cp949')
+        print("----- saving csv Done -----")
+        print("Part_1_Pre - Refine_DF - refining_df  Done")
+        print("Part_1_Pre - Refine_DF  Done")
         
         return self.stock_pos_neg_file_1
                
 class Extra_Features:
     def __init__(self, df):
+        print("Part_1_Pre - Extra_Features  Start")
         self.df = df
         self.day_list = [3, 7, 15, 30]
 
@@ -132,13 +143,16 @@ class Extra_Features:
         print(self.df)
         
     def return_df(self):
+        print("Part_1_Pre - Extra_Features  Done")
         return(self.df)
 
 class ready_data_set:
     def __init__(self, df):
+        print("Part_1_Pre - ready_data_set  Start")
         self.s_df = df
     
     def split_X_y(self):
+        print("Part_1_Pre - ready_data_set - split_X_y  Start")
         a_df = self.s_df
         a_1_df = a_df.dropna()
         
@@ -147,7 +161,8 @@ class ready_data_set:
         X= X.iloc[:-1]
         #y는 ratio(등락률)로 잡고, 첫번째부터 마지막까지 읽어옴
         y = a_1_df.iloc[1:, 2:3]
-        
+        print("Part_1_Pre - ready_data_set - split_X_y  Done")
+        print("Part_1_Pre - ready_data_set  Done")
         return X, y
     
     

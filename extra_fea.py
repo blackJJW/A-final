@@ -24,32 +24,42 @@ from sklearn import metrics
 
 class Set_Data:
     def __init__(self, df):
+        print("extra_fea - Set_Data  Start")
         self.stock_file_name = df
         
         self.refine_data()
         
     def refine_data(self):
+        print("extra_fea - Set_Data - refine_data Start")
         company_stock = self.stock_file_name
+        print("----- dropping columns Start -----")
         try:
             company_stock_1 = company_stock.drop(columns=["Unnamed: 0","등락률","거래대금","시가총액","상장주식수"])
         except:
             company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
-
+        print("----- dropping columns Done -----")
+        
+        print("----- transforming datetime / sorting Start -----")
         # 날짜 데이터를 datetime 형식으로 바꾸고 순서 재정렬
         company_stock_1['일자'] = company_stock_1['일자'].map(lambda x : datetime.strptime(x, "%Y/%m/%d"))
         company_stock_1 = company_stock_1.sort_values('일자')
+        print("----- transforming datetime / sorting Done -----")
 
+        print("----- changing column names Start -----")
         #컬럼명을 영어로 바꿈
         company_stock_1.columns = ['date', 'close', 'diff' , 'start', 'high' ,'low', 'volume']
         company_stock_1 = company_stock_1.set_index('date') # date를 index로 설정
-
+        print("----- changing column names Done -----")
         self.df = company_stock_1
+        print("extra_fea - Set_Data - refine_data Done")
         
     def return_df(self):
+        print("extra_fea - Set_Data  Done")
         return(self.df)
                 
 class Extra_Features_1:
     def __init__(self, df):
+        print("extra_fea - Extra_Features_1  Start")
         self.df = df
         self.day_list = [3, 7, 15, 30]
 
@@ -147,10 +157,12 @@ class Extra_Features_1:
         print(self.df)
         
     def return_df(self):
+        print("extra_fea - Extra_Features_1  Done")
         return(self.df)
     
 class ML_Part_1:
     def __init__(self, stock_file_name):
+        print("extra_fea - ML_Part_1  Start")
         self.df =  pd.read_csv('./data/stock/extra_f/'+stock_file_name, encoding='cp949')
         self.stock_file_name = stock_file_name
         
@@ -159,6 +171,8 @@ class ML_Part_1:
         self.income_rate()
         
     def ready(self):
+        print("extra_fea - ML_Part_1 - ready  Start")
+        print("----- setting columns Start -----")
         def up_down(x):
             if x >= 0:
                 return 1 #내일의 종가가 오르거나 그대로면 1
@@ -166,10 +180,11 @@ class ML_Part_1:
                 return 0
             
         self.df = self.df.set_index('date')
-        print(self.df)
         self.df['fluctuation'] = (self.df['close'].shift(-1)-self.df['close']).apply(up_down)
         self.df.drop('diff', axis=1, inplace=True)
-
+        print("----- setting columns Done -----")
+        
+        print("----- spliting train, test Start -----")
         rp =int(len(self.df)*0.7)
 
         print('기존의 데이터 갯수 :', len(self.df))
@@ -182,8 +197,12 @@ class ML_Part_1:
         target = company_stock_1_df['fluctuation']
         company_stock_1_df = company_stock_1_df.drop('fluctuation', axis = 1)
 
-        self.train, self.test, self.train_target, self.test_target = train_test_split(company_stock_1_df, target, test_size = 0.3, shuffle=False ) 
+        self.train, self.test, self.train_target, self.test_target = train_test_split(company_stock_1_df, target, test_size = 0.3, shuffle=False )
+        print("----- spliting train, test Done -----")
+        print("extra_fea - ML_Part_1 - ready  Done")
+        
     def cross_accuracy(self):
+        print("extra_fea - ML_Part_1 - cross_accuracy  Start")
         #cross_val_score에서 분류모형의 scoring은 accuracy이다.
         kfold = KFold(n_splits = 3, shuffle = False, random_state = None)
 
@@ -195,7 +214,7 @@ class ML_Part_1:
         naive = GaussianNB()
         # SVM은 매개변수와 데이터 전처리 부분에서 신경써야함. 따라서 현재 사용하지 않는다.
         # 추후 매개변수를 선택하는 알고리즘을 짠 후 사용하도록 하자
-
+        print("----- generating cv-accuracy Start -----")
         self.models = [{'name' : 'Logistic', 'model' : logistic}, {'name' : 'KNN', 'model' : knn},
                 {'name' : 'DecisonTree', 'model' : decisiontree}, {'name' : 'RandomForest', 'model' : forest},
                 {'name' : 'NaiveBayes', 'model' : naive}]
@@ -231,9 +250,12 @@ class ML_Part_1:
             print ('Accuracy Score : {:.4f}\n'.format(metrics.accuracy_score(self.test_target, predicted)))
         sys.stdout.close()
         sys.stdout = temp
-
+        print("----- generating cv-accuracy Done -----")
+        print("extra_fea - ML_Part_1 - cross_accuracy  Done")
         
     def income_rate(self):
+        print("extra_fea - ML_Part_1 - income_rate  Start")
+        print("----- creating income ratio report Start -----")
         def rate_of_return():
             df['percent'] = round((df.close-df.close.shift(1))/df.close.shift(1)*100, 2) 
             #round(0.4457, 2) > 0.4475를 소수점 아래 둘째 자리로 반올림한다.
@@ -263,12 +285,7 @@ class ML_Part_1:
         
         sys.stdout.close()
         sys.stdout = temp
-    
-if __name__=="__main__":
-    a = pd.read_csv("./data/stock_pos_neg/오뚜기_test.csvpos_neg_result.csv", encoding='cp949')
-    a = a.drop(columns=["level_0"])
-    print(a)   
-    #b = Set_Data(a)
-    #c = b.return_df()
-    #print(c)
+        print("----- creating income ratio report Done -----")
+        print("extra_fea - ML_Part_1 - income_rate  Done")
+        print("extra_fea - ML_Part_1  Done")
     

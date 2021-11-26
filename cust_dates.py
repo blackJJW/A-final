@@ -14,18 +14,20 @@ time_format ='%H:%M:%S'    # ex) '17:20:00'
 
 # ----------날짜 기간 내 모든 날짜 리스트---------------------------------------------------------------
 def date_range(start, end): 
+    print("cust_dates - date_range Start")
     start = datetime.strptime(start, format_t)
     end = datetime.strptime(end, format_t)
     dates = [(start + timedelta(days = i)).strftime(format_t) for i in range((end - start).days+1)]
-  
+    print("cust_dates - date_range Done")
     return dates
 # -----------------------------------------------------------------------------------------------------
 
 # ------------날짜 data 형식 변환-----------------------------------
-def type_date_transform(day, dateform):    
+def type_date_transform(day, dateform):
+    print("cust_dates - type_date_transform Start")    
     origin_date = datetime.strptime(day, dateform)
     transform_date = datetime.strftime(origin_date, format_t)
-
+    print("cust_dates - type_date_transform Done")
     return transform_date
 # -----------------------------------------------------------------
 
