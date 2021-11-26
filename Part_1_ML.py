@@ -48,8 +48,11 @@ class Set_Data:
         
     def refine_data(self):
         company_stock = pd.read_csv('./data/stock/'+self.stock_file_name, encoding="cp949")
-        company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
-        
+        try:
+            company_stock_1 = company_stock.drop(columns=["Unnamed: 0","등락률","거래대금","시가총액","상장주식수"])
+        except:
+            company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
+        print(company_stock_1)
         # 날짜 데이터를 datetime 형식으로 바꾸고 순서 재정렬
         company_stock_1['일자'] = company_stock_1['일자'].map(lambda x : datetime.strptime(x, "%Y/%m/%d"))
         company_stock_1 = company_stock_1.sort_values('일자')
@@ -57,7 +60,7 @@ class Set_Data:
         #컬럼명을 영어로 바꿈
         company_stock_1.columns = ['date', 'close', 'diff' , 'start', 'high' ,'low', 'volume']
         company_stock_1 = company_stock_1.set_index('date') # date를 index로 설정
-
+        print(company_stock_1)
         company_stock_1.to_csv('./data/stock/refined/'+self.stock_file_name+'_refined.csv', encoding='cp949')
     
 class ML_Part_1:
@@ -77,6 +80,7 @@ class ML_Part_1:
                 return 0
             
         self.df = self.df.set_index('date')
+        print(self.df)
         self.df['fluctuation'] = (self.df['close'].shift(-1)-self.df['close']).apply(up_down)
         self.df.drop('diff', axis=1, inplace=True)
 

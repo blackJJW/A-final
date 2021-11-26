@@ -16,9 +16,13 @@ class Refine_DF:
         
     def refining_df(self):
         stock_pos_neg_file = pd.read_csv('./data/stock_pos_neg/'+self.file_name, encoding="cp949")
-        stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
+        try:
+            stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0.1","Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
+        except:
+            stock_pos_neg_file = stock_pos_neg_file.drop(columns=["Unnamed: 0", "level_0", "index", "상장주식수", "거래대금", "시가총액"])
         stock_pos_neg_file = stock_pos_neg_file.rename(columns = {"일자":"date","종가":"close", "거래량":"volume",
                                                                   "시가":"open","고가":"high", "저가":"low","대비":"diff","등락률":"ratio"})
+        print(stock_pos_neg_file)
         stock_pos_neg_file = stock_pos_neg_file.set_index("date")
         stock_pos_neg_file = stock_pos_neg_file.dropna()
         self.stock_pos_neg_file_1 = stock_pos_neg_file.copy()
