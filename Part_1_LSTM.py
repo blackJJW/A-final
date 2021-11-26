@@ -69,7 +69,6 @@ class LSTM1(nn.Module):
     self.relu = nn.ReLU() 
     
   def forward(self,x): 
-    print("Part_1_LSTM - LSTM1 - forward  Start")
     h_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)).to(device) #hidden state 
     c_0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size)).to(device) #internal state 
     # Propagate input through LSTM 
@@ -81,8 +80,6 @@ class LSTM1(nn.Module):
     out = self.fc_1(out) #first Dense 
     out = self.relu(out) #relu 
     out = self.fc(out) #Final Output 
-    print("Part_1_LSTM - LSTM1 - forward  Done")
-    print("Part_1_LSTM - LSTM1  Done")
     return out
 
 class LSTM_predict:

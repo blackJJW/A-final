@@ -1,7 +1,7 @@
 Model Logistic CV score : 0.5644
 Model KNN CV score : 0.6589
-Model DecisonTree CV score : 0.5406
-Model RandomForest CV score : 0.6240
+Model DecisonTree CV score : 0.5644
+Model RandomForest CV score : 0.6121
 Model NaiveBayes CV score : 0.5764
 
 
@@ -42,34 +42,34 @@ Accuracy Score : 0.5676
 model name : DecisonTree
               precision    recall  f1-score   support
 
-           0       0.35      0.53      0.42        15
-           1       0.50      0.32      0.39        22
+           0       0.40      0.67      0.50        15
+           1       0.58      0.32      0.41        22
 
-    accuracy                           0.41        37
-   macro avg       0.42      0.43      0.40        37
-weighted avg       0.44      0.41      0.40        37
+    accuracy                           0.46        37
+   macro avg       0.49      0.49      0.46        37
+weighted avg       0.51      0.46      0.45        37
 
 Confusion Matrix
-[[ 8  7]
+[[10  5]
  [15  7]]
-Accuracy Score : 0.4054
+Accuracy Score : 0.4595
 
 
 
 model name : RandomForest
               precision    recall  f1-score   support
 
-           0       0.44      0.80      0.57        15
-           1       0.70      0.32      0.44        22
+           0       0.46      0.73      0.56        15
+           1       0.69      0.41      0.51        22
 
-    accuracy                           0.51        37
-   macro avg       0.57      0.56      0.50        37
-weighted avg       0.60      0.51      0.49        37
+    accuracy                           0.54        37
+   macro avg       0.58      0.57      0.54        37
+weighted avg       0.60      0.54      0.53        37
 
 Confusion Matrix
-[[12  3]
- [15  7]]
-Accuracy Score : 0.5135
+[[11  4]
+ [13  9]]
+Accuracy Score : 0.5405
 
 
 

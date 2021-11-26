@@ -14,7 +14,6 @@ class Gen_Senti:
     def gen_senti(self):
         print("Gen_Senti_Process - Gen_Senti - gen_seti Start")
         def get_stock_price(stock_list, p, date):
-            print("----- matching date - get_stock_price Start -----")
             while(True):
                # print(stock_list[p]['date'], date)
               if len(stock_list) > p:
@@ -28,7 +27,6 @@ class Gen_Senti:
                 else:
                    p = p+1
               else:
-                print("----- matching date - get_stock_price Done -----")
                 return None, p
         print("----- reading csv Start -----")
         data_df_sorted = pd.read_csv('./data/news/sorted_article/'+self.news_file, encoding='utf8')
