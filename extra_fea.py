@@ -1,3 +1,10 @@
+import pandas as pd
+import numpy as np
+import datetime
+from datetime import datetime
+import sys
+from tqdm import tqdm
+
 # Importing Classifier Modules
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -15,46 +22,19 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
-import pandas as pd
-import numpy as np
-import datetime
-from datetime import datetime
-import sys
-from tqdm import tqdm
-#-------------------------------------------
-#     training, test 데이터 크기 , 개수
-#     모델 별 (LogisticRegression, KNeighborsClassifier,
-#              DecisionTreeClassifier, RandomForestClassifier,
-#              GaussianNB)
-#
-#             CV score
-#             classification_report
-#             confusion matrix
-#             Accuracy Score
-#-------------------------------------------
-
-#------------------------------------------
-#       model name :
-#       첫날을 제외한 거래일수 :
-#       누적 수익률 :
-#       1일 평균 수익률 :
-#------------------------------------------
-
 class Set_Data:
-    def __init__(self, stock_file_name):
-        self.stock_file_name = stock_file_name
+    def __init__(self, df):
+        self.stock_file_name = df
         
         self.refine_data()
         
     def refine_data(self):
-  
-        company_stock = pd.read_csv('./data/stock/'+self.stock_file_name, encoding="cp949")
-
+        company_stock = self.stock_file_name
         try:
             company_stock_1 = company_stock.drop(columns=["Unnamed: 0","등락률","거래대금","시가총액","상장주식수"])
         except:
             company_stock_1 = company_stock.drop(columns=["등락률","거래대금","시가총액","상장주식수"])
-        print(company_stock_1)
+
         # 날짜 데이터를 datetime 형식으로 바꾸고 순서 재정렬
         company_stock_1['일자'] = company_stock_1['일자'].map(lambda x : datetime.strptime(x, "%Y/%m/%d"))
         company_stock_1 = company_stock_1.sort_values('일자')
@@ -62,12 +42,116 @@ class Set_Data:
         #컬럼명을 영어로 바꿈
         company_stock_1.columns = ['date', 'close', 'diff' , 'start', 'high' ,'low', 'volume']
         company_stock_1 = company_stock_1.set_index('date') # date를 index로 설정
-        print(company_stock_1)
-        company_stock_1.to_csv('./data/stock/refined/'+self.stock_file_name+'_refined.csv', encoding='cp949')
+
+        self.df = company_stock_1
+        
+    def return_df(self):
+        return(self.df)
+                
+class Extra_Features_1:
+    def __init__(self, df):
+        self.df = df
+        self.day_list = [3, 7, 15, 30]
+
+        self.ma()
+        self.ema()
+        self.ppo()
+        self.rsi()
+        #self.high_low()
+        self.cci()
+        self.macd()
+        
+    #이동평균선
+    def ma(self):
+        for day in self.day_list:
+            #이동평균 칼럼 추가 당일 포함 3일 7일 15일 30일
+            self.df['MA_{}'.format(int(day))] = self.df['close'].rolling(window=int(day)).mean()
+            
+    #지수이동평균선
+    def ema(self):
+        for day in self.day_list:
+            self.df['EWM_{}'.format(int(day))] = self.df['close'].ewm(span=int(day)).mean()
+
+    #이격도
+    def ppo(self):
+        for day in self.day_list:
+            self.df['PPO_{}'.format(int(day))] = (self.df['close'] / self.df['MA_{}'.format(int(day))])*100
+            
+    #rsi        
+    def rsi(self):
+        def U(x):
+            if x >= 0:
+                return x
+            else :
+                return 0
+        def D(x):
+            if x <= 0:
+                return x*(-1)
+            else :
+                return 0
+            
+        self.df['diff_rsi'] = (self.df['close'].shift(1) - self.df['close'])
+        self.df['AU'] = self.df['diff_rsi'].apply(U).rolling(window=14).mean() 
+        self.df['AD'] = self.df['diff_rsi'].apply(D).rolling(window=14).mean() 
+        self.df['RSI'] = self.df['AU']/(self.df['AU']+self.df['AD'])
+        self.df.drop(['diff_rsi', 'AU', 'AD'], axis=1, inplace = True)
+    '''    
+    #모멘텀 스토캐스틱
+    def high_low(self):
+        day = 5
+        self.df['high_st'] = np.nan
+        self.df['low_st'] = np.nan
+        self.df = self.df.reset_index()
+        
+        for i in range(len(self.df)-day+1):
+            self.df.loc[i, 'high_st']= self.df[i:i+day]['high'].max()
+            self.df.loc[i, 'low_st']= self.df[i:i+day]['low'].min()
+
+        self.df['high_st_4'] = self.df['high_st'].shift(4)
+        self.df['low_st_4'] = self.df['low_st'].shift(4)
+
+        self.df['fast_K'] = (self.df['close']-self.df['low_st_4'])/(self.df['high_st_4']-self.df['low_st_4'])
+        self.df['fast_D'] = self.df['fast_K'].rolling(3).mean()
+        self.df['slow_K'] = self.df['fast_D']
+        self.df['slow_D'] = self.df['slow_K'].rolling(3).mean()
+        self.df = self.df.set_index('date')
+        
+        self.df = self.df.drop(['high_st', 'low_st', 'high_st_4', 'low_st_4', 'fast_K', 'fast_D'], axis = 1)
+    '''
+    #CCI
+    def cci(self):
+        #CCI = (M-N) / (0.015*D)
+        # M=특정일의 고가,저가, 종가의 평균
+        # N = 일정기간동안의 단순이동평균 통상적으로 20일로 사용
+        # D = M-N의 일정기간동안의 단순이동평균
+        M = ((self.df.high)+(self.df.low)+(self.df.close)) / 3
+        N = M.rolling(20).mean()
+        D = (M-N).rolling(20).mean()
+        CCI = (M - N)/ (0.015 * D)
+        self.df['CCI'] = CCI
+        
+    #macd
+    def macd(self):
+        short_ = 12 
+        long_ = 26 
+        t = 9 
+
+        ma_12 = self.df.close.ewm(span = short_).mean()
+        ma_26 = self.df.close.ewm(span = long_).mean() # 장기(26) EMA
+        macd = ma_12 - ma_26 # MACD
+        macdSignal = macd.ewm(span = t).mean() # Signal
+        macdOscillator = macd - macdSignal # Oscillator
+        self.df['macd'] = macdOscillator
+        
+    def show_df(self):
+        print(self.df)
+        
+    def return_df(self):
+        return(self.df)
     
 class ML_Part_1:
     def __init__(self, stock_file_name):
-        self.df =  pd.read_csv('./data/stock/refined/'+stock_file_name+'_refined.csv', encoding='cp949')
+        self.df =  pd.read_csv('./data/stock/extra_f/'+stock_file_name, encoding='cp949')
         self.stock_file_name = stock_file_name
         
         self.ready()
@@ -117,7 +201,7 @@ class ML_Part_1:
                 {'name' : 'NaiveBayes', 'model' : naive}]
 
         temp = sys.stdout
-        sys.stdout = open('./data/report/cv_acc/'+self.stock_file_name+'_cv_accuracy_report.txt', 'w')
+        sys.stdout = open('./data/report/cv_acc/'+self.stock_file_name+'_extra_cv_accuracy_report.txt', 'w')
 
         def cv_accuracy(models):
             for m in tqdm(models):
@@ -158,7 +242,7 @@ class ML_Part_1:
                     df.loc[i+1, 'percent'] = df.loc[i+1, 'percent']
         
         temp = sys.stdout           
-        sys.stdout = open('./data/report/income_rate/'+self.stock_file_name+'_income_rate_report.txt', 'w')
+        sys.stdout = open('./data/report/income_rate/'+self.stock_file_name+'_extra_income_rate_report.txt', 'w')
         
         for m in tqdm(self.models) : 
             model = m['model']
@@ -179,3 +263,12 @@ class ML_Part_1:
         
         sys.stdout.close()
         sys.stdout = temp
+    
+if __name__=="__main__":
+    a = pd.read_csv("./data/stock_pos_neg/오뚜기_test.csvpos_neg_result.csv", encoding='cp949')
+    a = a.drop(columns=["level_0"])
+    print(a)   
+    #b = Set_Data(a)
+    #c = b.return_df()
+    #print(c)
+    

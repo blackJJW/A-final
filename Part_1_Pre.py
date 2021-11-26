@@ -6,6 +6,8 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import torch 
 from torch.autograd import Variable
 
+import Part_1_ML
+
 mm = MinMaxScaler()
 ss = StandardScaler()
 
@@ -147,4 +149,6 @@ class ready_data_set:
         y = a_1_df.iloc[1:, 2:3]
         
         return X, y
+    
+    
     

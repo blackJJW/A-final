@@ -1,0 +1,90 @@
+Model Logistic CV score : 0.4845
+Model KNN CV score : 0.5091
+Model DecisonTree CV score : 0.5091
+Model RandomForest CV score : 0.5104
+Model NaiveBayes CV score : 0.5142
+
+
+model name : Logistic
+              precision    recall  f1-score   support
+
+           0       0.54      0.49      0.51       173
+           1       0.49      0.54      0.51       158
+
+    accuracy                           0.51       331
+   macro avg       0.51      0.51      0.51       331
+weighted avg       0.51      0.51      0.51       331
+
+Confusion Matrix
+[[84 89]
+ [73 85]]
+Accuracy Score : 0.5106
+
+
+
+model name : KNN
+              precision    recall  f1-score   support
+
+           0       0.52      0.46      0.49       173
+           1       0.48      0.54      0.51       158
+
+    accuracy                           0.50       331
+   macro avg       0.50      0.50      0.50       331
+weighted avg       0.50      0.50      0.50       331
+
+Confusion Matrix
+[[80 93]
+ [73 85]]
+Accuracy Score : 0.4985
+
+
+
+model name : DecisonTree
+              precision    recall  f1-score   support
+
+           0       0.51      0.53      0.52       173
+           1       0.47      0.45      0.46       158
+
+    accuracy                           0.49       331
+   macro avg       0.49      0.49      0.49       331
+weighted avg       0.49      0.49      0.49       331
+
+Confusion Matrix
+[[92 81]
+ [87 71]]
+Accuracy Score : 0.4924
+
+
+
+model name : RandomForest
+              precision    recall  f1-score   support
+
+           0       0.51      0.56      0.53       173
+           1       0.46      0.41      0.43       158
+
+    accuracy                           0.49       331
+   macro avg       0.49      0.49      0.48       331
+weighted avg       0.49      0.49      0.49       331
+
+Confusion Matrix
+[[97 76]
+ [93 65]]
+Accuracy Score : 0.4894
+
+
+
+model name : NaiveBayes
+              precision    recall  f1-score   support
+
+           0       0.52      0.97      0.67       173
+           1       0.25      0.01      0.02       158
+
+    accuracy                           0.51       331
+   macro avg       0.38      0.49      0.35       331
+weighted avg       0.39      0.51      0.36       331
+
+Confusion Matrix
+[[167   6]
+ [156   2]]
+Accuracy Score : 0.5106
+

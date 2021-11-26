@@ -12,6 +12,9 @@ from matplotlib.figure import Figure
 import torch 
 import torch.nn as nn
 
+import extra_fea
+import extra_1
+
 import DataFrameProcessing
 import Gen_Senti_Process
 import NewsArticleDFProcessing
@@ -388,6 +391,111 @@ class Page7(Page):
            
        btn_income = tk.Button(self, text = "income", font="나눔고딕 10", command=view_income)
        btn_income.place(relx=0.266, rely = 0.2)
+       #----------------------------------------------------------------------------------------------------------------------------------
+       label_noun_1 = tk.Label(self, text="Extra_fea CV / Income rate 생성", font="나눔고딕 15")
+       label_noun_1.place(relx=0.1, rely=0.25)
+             
+       label_stock_file_name_1 = tk.Label(self, text="stock 파일 번호 : ", font="나눔고딕 10")
+       label_stock_file_name_1.place(relx=0.03, rely =0.3)
+       ent_stock_file_name_1 = tk.Entry(self)
+       ent_stock_file_name_1.place(relx=0.14, rely =0.3)
+       btn_stock_file_list_1 = tk.Button(self, text="목록", font="나눔고딕 10", command=show_stock_list)
+       btn_stock_file_list_1.place(relx=0.29, rely=0.3)
+       
+       def stock_ML_2():
+         b = display_dir_path("stock")
+         a = pd.read_csv("./data/stock/"+b[int(ent_stock_file_name_1.get())], encoding="cp949")
+         c = extra_fea.Set_Data(a)
+         e = c.return_df()
+         f = extra_fea.Extra_Features_1(e)
+         g = f.return_df()
+         g = g.dropna()
+         g.to_csv('./data/stock/extra_f/'+b[int(ent_stock_file_name_1.get())], encoding="cp949")
+         extra_fea.ML_Part_1(b[int(ent_stock_file_name_1.get())])
+   
+       btn_progress_np_1 = tk.Button(self, text = "Progress", font="나눔고딕 10", command=stock_ML_2)
+       btn_progress_np_1.place(relx=0.255, rely = 0.35)
+       
+       def view_cv_1():
+           str = ""
+           b = display_dir_path("stock")
+           cv_report = open('./data/report/cv_acc/'+b[int(ent_stock_file_name_1.get())]+'_extra_cv_accuracy_report.txt', 'r')
+           str = cv_report.readlines()
+           text4.delete(1.0, 'end')
+           text4.insert(1.0, str)
+           cv_report.close()
+       
+       btn_cv1 = tk.Button(self, text = "CV", font="나눔고딕 10", command=view_cv_1)
+       btn_cv1.place(relx=0.235, rely = 0.4)
+       
+       def view_income_1():
+           str = ""
+           b = display_dir_path("stock")
+           income_report = open('./data/report/income_rate/'+b[int(ent_stock_file_name_1.get())]+'_extra_income_rate_report.txt', 'r')
+           str = income_report.readlines()
+           text4.delete(1.0, 'end')
+           text4.insert(1.0, str)
+           income_report.close()
+           
+       btn_income1 = tk.Button(self, text = "income", font="나눔고딕 10", command=view_income_1)
+       btn_income1.place(relx=0.266, rely = 0.4)
+       #-------------------------------------------------------------------------------------------------------------
+       label_noun_2 = tk.Label(self, text="Extra_fea + Senti", font="나눔고딕 15")
+       label_noun_2.place(relx=0.1, rely=0.45)
+       
+       def show_stock_np_list():
+         a = display_dir_path("stock_pos_neg")
+         text4.delete(1.0,"end")
+         for i in range(len(a), 0, -1):
+          text4.insert(1.0, str(i-1)+':'+a[i-1]+'\n')
+             
+       label_stock_file_name_2 = tk.Label(self, text="stock 파일 번호 : ", font="나눔고딕 10")
+       label_stock_file_name_2.place(relx=0.03, rely =0.5)
+       ent_stock_file_name_2 = tk.Entry(self)
+       ent_stock_file_name_2.place(relx=0.14, rely =0.5)
+       btn_stock_file_list_2 = tk.Button(self, text="목록", font="나눔고딕 10", command=show_stock_np_list)
+       btn_stock_file_list_2.place(relx=0.29, rely=0.5)
+       
+       def stock_ML_3():
+         b = display_dir_path("stock_pos_neg")
+         a = pd.read_csv("./data/stock_pos_neg/"+b[int(ent_stock_file_name_2.get())], encoding="cp949")
+         a = a.drop(columns=["level_0"])
+         print(a)
+         c = extra_1.Set_Data(a)
+         e = c.return_df()
+         f = extra_1.Extra_Features_1(e)
+         g = f.return_df()
+         g = g.dropna()
+         g.to_csv('./data/stock/extra_s/'+b[int(ent_stock_file_name_2.get())], encoding="cp949")
+         extra_1.ML_Part_1(b[int(ent_stock_file_name_2.get())])
+   
+       btn_progress_np_2 = tk.Button(self, text = "Progress", font="나눔고딕 10", command=stock_ML_3)
+       btn_progress_np_2.place(relx=0.255, rely = 0.55)
+       
+       def view_cv_2():
+           str = ""
+           b = display_dir_path("stock_pos_neg")
+           cv_report = open('./data/report/cv_acc/'+b[int(ent_stock_file_name_2.get())]+'_extra_s_cv_accuracy_report.txt', 'r')
+           str = cv_report.readlines()
+           text4.delete(1.0, 'end')
+           text4.insert(1.0, str)
+           cv_report.close()
+       
+       btn_cv2 = tk.Button(self, text = "CV", font="나눔고딕 10", command=view_cv_2)
+       btn_cv2.place(relx=0.235, rely = 0.6)
+       
+       def view_income_2():
+           str = ""
+           b = display_dir_path("stock_pos_neg")
+           income_report = open('./data/report/income_rate/'+b[int(ent_stock_file_name_2.get())]+'_extra_s_income_rate_report.txt', 'r')
+           str = income_report.readlines()
+           text4.delete(1.0, 'end')
+           text4.insert(1.0, str)
+           income_report.close()
+           
+       btn_income2 = tk.Button(self, text = "income", font="나눔고딕 10", command=view_income_2)
+       btn_income2.place(relx=0.266, rely = 0.6)
+       #-------------------------------------------------------------------------------------------------------------       
        
        text4 = tk.Text(self)
        text4.place(relx=0.35,rely=0.08, width=500,height=500)
