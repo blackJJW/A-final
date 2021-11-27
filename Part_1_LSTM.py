@@ -36,7 +36,6 @@ class Scaler:
         print("----- setting test, train data Done -----")
         
         #numpy형태에서는 학습이 불가능하기 때문에 학습할 수 있는 형태로 변환하기 위해 Torch로 변환
-        print("----- transforming to Torch Start -----")
         self.X_train_tensors = Variable(torch.Tensor(self.X_train)) 
         self.X_test_tensors = Variable(torch.Tensor(self.X_test)) 
 
@@ -97,10 +96,8 @@ class LSTM_predict:
         self.predict()
     
     def epochs(self):
-        print("Part_1_LSTM - LSTM_predict - epochs  Start")
         loss_function = torch.nn.MSELoss()    # mean-squared error for regression
         optimizer = torch.optim.Adam(self.lstm1.parameters(), lr=self.learning_rate)  # adam optimizer
-        print("----- epoch Start -----")
         for epoch in tqdm(range(self.num_epochs)): 
           outputs = self.lstm1.forward(self.X_train.to(device)) #forward pass 
           optimizer.zero_grad() #caluclate the gradient, manually setting to 0 
@@ -113,11 +110,10 @@ class LSTM_predict:
           optimizer.step() #improve from loss, i.e backprop 
           if epoch % 100 == 0: 
             print("Epoch: %d, loss: %1.5f" % (epoch, loss.item()))
-        print("----- epoch Done -----")
-        print("Part_1_LSTM - LSTM_predict - epochs  Done")
+
             
     def predict(self):
-        print("Part_1_LSTM - LSTM_predict - predict  Start")
+
         df_X_ss = ss.transform(self.df.drop(columns='close').iloc[:-1])
         df_y_mm = mm.transform(self.df.iloc[1:, 2:3])
 
