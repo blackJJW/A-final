@@ -102,6 +102,7 @@
 
 ---
 
-![A-team 결과 ppt](pdf/뉴스 감성분석을 통한 주가예측.pdf)
 
-![시연영상](https://drive.google.com/file/d/1qnK7A0GaMw1zhXHgt26dS85Rou1XlrnY/view?usp=sharing)
+![A-team 결과 ppt](pdf/뉴스%20감성분석을%20통한%20주가예측.pdf)
+
+[![시연영상]()](https://drive.google.com/file/d/1qnK7A0GaMw1zhXHgt26dS85Rou1XlrnY/view?usp=sharing)
