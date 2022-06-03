@@ -13,7 +13,7 @@
     - `sklearn`, `xgboost`, `torch`
     - `tqdm`, `os`, `shutil`, `time`, `re`, `datetime`, `collections`
     - `tkinter`
-- 작업 툴
+- **작업 툴**
     - `VScode`
     - `Spyder`
     - `Colab`
