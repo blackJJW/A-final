@@ -102,6 +102,6 @@
 
 ---
 
-[![A-team 결과 ppt google drive]()](https://drive.google.com/file/d/1mXmaurSsZf5xGDKVsjhImYvcaP7WI_XY/view?usp=sharing)
+[A-team 결과 ppt google drive](https://drive.google.com/file/d/1mXmaurSsZf5xGDKVsjhImYvcaP7WI_XY/view?usp=sharing)
 
-[![시연영상 google drive]()](https://drive.google.com/file/d/1qnK7A0GaMw1zhXHgt26dS85Rou1XlrnY/view?usp=sharing)
+[시연영상 google drive](https://drive.google.com/file/d/1qnK7A0GaMw1zhXHgt26dS85Rou1XlrnY/view?usp=sharing)
